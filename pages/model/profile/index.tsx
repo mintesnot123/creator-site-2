@@ -53,6 +53,7 @@ import {
 } from "src/interfaces";
 import Router from "next/router";
 import { Row, Col, Divider, Card, Avatar } from "antd";
+import ProfileCard from './ProfileCard';
 import "@components/performer/performer.less";
 import "./profile.less";
 import "./profile.css";
@@ -92,6 +93,7 @@ class PerformerProfile extends PureComponent<IProps> {
   subscriptionType = "monthly";
 
   state = {
+    currentTab: "feed",
     tab: "video",
     itemPerPage: 24,
     videoPage: 0,
@@ -102,6 +104,10 @@ class PerformerProfile extends PureComponent<IProps> {
     openSubscriptionModal: false,
     submiting: false,
   };
+
+  changeTab = (tab) => {
+    this.setState({ currentTab: tab });
+  }
 
   static async getInitialProps({ ctx }) {
     try {
@@ -268,8 +274,7 @@ class PerformerProfile extends PureComponent<IProps> {
     }
     if (!performer.isSubscribed) {
       message.error(
-        `Please subscribe to ${
-          performer?.name || performer?.username || "the model"
+        `Please subscribe to ${performer?.name || performer?.username || "the model"
         } to start chatting`
       );
       return;
@@ -383,14 +388,13 @@ class PerformerProfile extends PureComponent<IProps> {
       total: totalGalleries,
       requesting: loadingGallery,
     } = galleryProps;
-    const { showWelcomVideo, openSubscriptionModal, submiting } = this.state;
+    const { showWelcomVideo, openSubscriptionModal, submiting, currentTab } = this.state;
     return (
       <Layout>
         <Head>
           <title>
-            {`${ui?.siteName} | ${
-              performer?.name || performer?.username || ""
-            }`}
+            {`${ui?.siteName} | ${performer?.name || performer?.username || ""
+              }`}
           </title>
           <meta
             name="keywords"
@@ -400,9 +404,8 @@ class PerformerProfile extends PureComponent<IProps> {
           {/* OG tags */}
           <meta
             property="og:title"
-            content={`${ui?.siteName} | ${
-              performer?.name || performer?.username || ""
-            }`}
+            content={`${ui?.siteName} | ${performer?.name || performer?.username || ""
+              }`}
             key="title"
           />
           <meta
@@ -417,9 +420,8 @@ class PerformerProfile extends PureComponent<IProps> {
           {/* Twitter tags */}
           <meta
             name="twitter:title"
-            content={`${ui?.siteName} | ${
-              performer?.name || performer?.username || ""
-            }`}
+            content={`${ui?.siteName} | ${performer?.name || performer?.username || ""
+              }`}
           />
           <meta
             name="twitter:image"
@@ -500,38 +502,37 @@ class PerformerProfile extends PureComponent<IProps> {
             </div>
             <div className="profile-list">
               <ul className="mb-0">
-                <li className="inline-block">
+                <li className={`inline-block ${currentTab === "feed" && "active"}`} onClick={() => this.changeTab("feed")}>
                   <h5 className="font-bold mb-0 block">
-                    {shortenLargeNumber(performer?.stats?.totalVideos || 0)}
+                    {shortenLargeNumber(performer?.stats?.totalGalleries || 0)}
                   </h5>
-                  <small className="text-muted">Videos</small>
+                  <small className="text-muted profile-list-btn">Feed</small>
                 </li>
-                <li className="inline-block">
+                <li className={`inline-block ${currentTab === "clips" && "active"}`} onClick={() => this.changeTab("clips")}>
                   <h5 className="font-bold mb-0 block">
-                    {shortenLargeNumber(performer?.stats?.totalPhotos || 0)}{" "}
+                    {shortenLargeNumber(performer?.stats?.totalVideos || 0)}{" "}
                   </h5>
-                  <small className="text-muted">Photos</small>
+                  <small className="text-muted">Clips</small>
                 </li>
-                <li className="inline-block">
+                <li className={`inline-block ${currentTab === "pic-set" && "active"}`} onClick={() => this.changeTab("pic-set")}>
                   <h5 className="font-bold mb-0 block">
-                    {shortenLargeNumber(performer?.stats?.likes || 0)}
+                    {shortenLargeNumber(performer?.stats?.totalPhotos || 0)}
                   </h5>
-                  <small className="text-muted">Likes</small>
+                  <small className="text-muted">Pic Set</small>
                 </li>
-                <li className="inline-block">
+                <li className={`inline-block ${currentTab === "about" && "active"}`} onClick={() => this.changeTab("about")}>
                   <h5 className="font-bold mb-0 block">
-                    {shortenLargeNumber(performer?.stats?.subscribers || 0)}
+                    My
                   </h5>
                   <small className="text-muted">
-                    {" "}
-                    <i className="fas fa-user mr-1"></i>Subscribers
+                    About
                   </small>
                 </li>
               </ul>
             </div>
           </div>
           <div className="model-content-wrapper-new">
-            <Row justify="center">
+            <Row justify="center" gutter={32}>
               <Col span={5}>
                 <div className="main-profile-new">
                   <div className="fl-col-new">
@@ -620,44 +621,11 @@ class PerformerProfile extends PureComponent<IProps> {
               </Col>
               <Col span={13}>
                 <Row gutter={16}>
-                  <Col span={12}>
-                    <Card
-                      style={{  height: 200, /*width: "100%" */ }}
-                      cover={
-                        <img
-                          alt="example"
-                          src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                        />
-                      }                      
-                    >
-                      <Meta
-                        avatar={
-                          <Avatar src="https://joeschmoe.io/api/v1/random" />
-                        }
-                        title="Card title"
-                        description="This is the description"
-                      />
-                    </Card>
-                  </Col>
-                  <Col span={12}>
-                  <Card
-                      style={{ height: 200, width: "100%" }}
-                      cover={
-                        <img
-                          alt="example"
-                          src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                        />
-                      }                      
-                    >
-                      <Meta
-                        avatar={
-                          <Avatar src="https://joeschmoe.io/api/v1/random" />
-                        }
-                        title="Card title"
-                        description="This is the description"
-                      />
-                    </Card>
-                  </Col>                  
+                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(value => {
+                    return <Col span={12}>
+                      <ProfileCard />
+                    </Col>
+                  })}
                 </Row>
               </Col>
             </Row>

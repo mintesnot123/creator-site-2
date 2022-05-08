@@ -1,9 +1,9 @@
 .main-container-new {
   margin: auto;
-  max-width: 1400px;
-  background-color: #f4f3fa;
+  max-width: 1800px;
+  background-color: #f5f4fb;
   width: 100%;
-  padding: 0 5px;
+  padding: 0 0;
 
   @media screen and (max-width: @mobile-screen) {
     padding: 0;
@@ -14,8 +14,8 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  height: 300px;
-  margin-top: 40px;
+  height: 350px;
+  margin-top: 70px;
 
   .tab-stat {
     color: @white;
@@ -54,6 +54,7 @@
 .model-content-wrapper {
   margin: 0 10%;
 }
+
 .model-content-wrapper-new {
   width: 100%;
 }
@@ -63,12 +64,43 @@
   justify-content: flex-end;
   text-align: center;
   margin-right: 10%;
-  padding: 0.25rem 0;
-}
+  padding: 0 0;
 
-.profile-list li {
-  display: inline-block;
-  margin: 0 10px;
+  ul {
+    margin: 0 0;
+  }
+
+  li {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 0 10px;
+    cursor: pointer;
+  }
+
+  li:hover {
+    border-bottom: 3px solid @primary-color;
+  }
+
+  .active {
+    border-bottom: 3px solid @primary-color;
+  }
+
+  .profile-list-btn {
+    padding-bottom: 6px;
+  }
+
+  h5 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    margin: 0 0;
+  }
+
+  small {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+  }
 }
 
 .main-profile-new {
@@ -84,6 +116,16 @@
   margin: 0 0 5px 0;
 }
 
+.video-card {
+
+  .price-container {
+    display: flex;
+    justify-content: end;
+    color: @primary-color;
+    font-weight: 700;
+  }
+}
+
 .fl-col-new {
   display: flex;
   flex-direction: column;
@@ -95,7 +137,9 @@
     width: 100%;
     height: 250px;
     object-fit: cover;
-    border: 4px solid #fafafa /* @primary-color */;
+    border: 4px solid #fafafa
+      /* @primary-color */
+    ;
     //border-radius: 50%;
   }
 
@@ -111,13 +155,16 @@
     width: 100%;
     margin: 5px 0;
     padding: 0 0;
+
     .social-icon {
       font-size: 30px;
     }
+
     .social-icon-small {
       font-size: 18px;
       display: block;
     }
+
     .ant-btn {
       font-size: 50px;
     }
@@ -145,6 +192,7 @@
     width: 100%;
     text-align: center;
     padding: 0.5rem;
+
     h4 {
       width: 100%;
       text-overflow: ellipsis;
@@ -177,6 +225,7 @@
     width: 100%;
     text-align: left;
   }
+
   .user-profile-list-wrapper {
     display: flex;
     flex-direction: column;
@@ -184,9 +233,11 @@
     align-items: left;
     width: 100%;
     padding: 10px 20px;
+
     li {
       margin-top: 8px;
     }
+
     .user-profile-list-icon {
       font-size: 15px;
       margin-right: 15px;

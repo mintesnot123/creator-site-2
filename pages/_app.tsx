@@ -17,6 +17,7 @@ import { updateSettings } from '@redux/settings/actions';
 import { Socket } from 'src/socket';
 import Head from 'next/head';
 import '../style/index.less';
+//import 'bootstrap/dist/css/bootstrap.css';
 
 declare global {
   interface Window {
@@ -187,14 +188,14 @@ class Application extends App<IApp> {
             <div dangerouslySetInnerHTML={{ __html: settings.headerScript }} />
           )}
         </Head>
-        {/* <Socket> */}
+        <Socket>
           <BaseLayout
             layout={layout}
             settings={settings}
           >
             <Component {...pageProps} />
           </BaseLayout>
-        {/* </Socket> */}
+        </Socket>
         {settings && settings.afterBodyScript && (
           // eslint-disable-next-line react/no-danger
           <div dangerouslySetInnerHTML={{ __html: settings.afterBodyScript }} />
