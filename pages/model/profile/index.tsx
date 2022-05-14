@@ -52,8 +52,13 @@ import {
   IError,
 } from "src/interfaces";
 import Router from "next/router";
+import { formatDateNoTime } from '@lib/date';
 import { Row, Col, Divider, Card, Avatar } from "antd";
 import { RiSnapchatLine, RiTwitterLine } from 'react-icons/ri';
+import { BsCameraVideoFill, BsCalendar, BsFlag } from 'react-icons/bs';
+import { IoIosSend } from 'react-icons/io';
+import { IoMaleFemale, IoLocationOutline } from 'react-icons/io5';
+import { FaDollarSign } from 'react-icons/fa';
 import FeedList from './FeedList';
 import "@components/performer/performer.less";
 import "./profile.less";
@@ -130,6 +135,7 @@ class PerformerProfile extends PureComponent<IProps> {
 
   async componentDidMount() {
     const { performer } = this.props;
+    console.log('performer', performer)
     if (performer) {
       const notShownWelcomeVideos = localStorage.getItem(
         "notShownWelcomeVideos"
@@ -559,21 +565,28 @@ class PerformerProfile extends PureComponent<IProps> {
                       Followed
                     </Button>
                     <ul className="social-icon-wrapper">
+                      {performer.isSubscribed ?
+                        <li className="inline-block">
+                          <IoIosSend className="social-icon-small" />
+                          <small className="text-muted">Chat</small>
+                        </li>
+                        :
+                        <li className="inline-block">
+                          <FaDollarSign className="social-icon-small" />{" "}{`${performer.monthlyPrice}/mo`}
+                          <small className="text-muted">Subscribe</small>
+                        </li>
+                      }
                       <li className="inline-block">
-                        <WhatsAppOutlined className="social-icon-small" />
-                        <small className="text-muted">Videos</small>
+                        <BsCameraVideoFill className="social-icon-small" />
+                        <small className="text-muted">Video Call</small>
                       </li>
                       <li className="inline-block">
                         <WhatsAppOutlined className="social-icon-small" />
-                        <small className="text-muted">Videos</small>
+                        <small className="text-muted">Custom</small>
                       </li>
                       <li className="inline-block">
-                        <WhatsAppOutlined className="social-icon-small" />
-                        <small className="text-muted">Videos</small>
-                      </li>
-                      <li className="inline-block">
-                        <WhatsAppOutlined className="social-icon-small" />
-                        <small className="text-muted">Videos</small>
+                        <FaDollarSign className="social-icon-small" />
+                        <small className="text-muted">Tip</small>
                       </li>
                     </ul>
 
@@ -599,10 +612,17 @@ class PerformerProfile extends PureComponent<IProps> {
                       </div>
                       <ul className="user-profile-list-wrapper">
                         <li className="inline-block">
-                          <WhatsAppOutlined className="user-profile-list-icon" />
+                          <BsCalendar className="user-profile-list-icon" />
                           <small className="text-muted">
                             {" "}
-                            <i className="fas fa-image mr-1"></i>Videos
+                            <i className="fas fa-image mr-1"></i>{formatDateNoTime(performer.createdAt)}
+                          </small>
+                        </li>
+                        <li className="inline-block">
+                          <IoMaleFemale className="user-profile-list-icon" />
+                          <small className="text-muted">
+                            {" "}
+                            <i className="fas fa-image mr-1"></i>{performer.gender}
                           </small>
                         </li>
                         <li className="inline-block">
@@ -613,20 +633,21 @@ class PerformerProfile extends PureComponent<IProps> {
                           </small>
                         </li>
                         <li className="inline-block">
-                          <WhatsAppOutlined className="user-profile-list-icon" />
+                          <BsFlag className="user-profile-list-icon" />
                           <small className="text-muted">
                             {" "}
                             <i className="fas fa-image mr-1"></i>Videos
                           </small>
                         </li>
                         <li className="inline-block">
-                          <WhatsAppOutlined className="user-profile-list-icon" />
+                          <IoLocationOutline className="user-profile-list-icon" />
                           <small className="text-muted">
                             {" "}
                             <i className="fas fa-image mr-1"></i>Videos
                           </small>
                         </li>
                       </ul>
+                      <p className="view-more-btn">View More</p>
                     </div>
                   </div>
                 </div>
