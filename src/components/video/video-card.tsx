@@ -15,6 +15,7 @@ interface IProps {
 }
 
 const VideoCard = ({ video, user }: IProps) => {
+  console.log('video',video)
   const { thumbnail, video: file, teaser } = video;
   const url = (thumbnail?.thumbnails && thumbnail?.thumbnails[0]) || thumbnail?.url || (teaser?.thumbnails && teaser?.thumbnails[0]) || (file?.thumbnails && file?.thumbnails[0]) || '/placeholder-image.jpg';
   return (

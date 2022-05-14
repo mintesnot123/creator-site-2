@@ -53,7 +53,8 @@ import {
 } from "src/interfaces";
 import Router from "next/router";
 import { Row, Col, Divider, Card, Avatar } from "antd";
-import ProfileCard from './ProfileCard';
+import { RiSnapchatLine, RiTwitterLine } from 'react-icons/ri';
+import FeedList from './FeedList';
 import "@components/performer/performer.less";
 import "./profile.less";
 import "./profile.css";
@@ -94,7 +95,7 @@ class PerformerProfile extends PureComponent<IProps> {
 
   state = {
     currentTab: "feed",
-    tab: "video",
+    tab: "feed",
     itemPerPage: 24,
     videoPage: 0,
     vodPage: 0,
@@ -105,9 +106,9 @@ class PerformerProfile extends PureComponent<IProps> {
     submiting: false,
   };
 
-  changeTab = (tab) => {
+  /* changeTab = (tab) => {
     this.setState({ currentTab: tab });
-  }
+  } */
 
   static async getInitialProps({ ctx }) {
     try {
@@ -324,6 +325,10 @@ class PerformerProfile extends PureComponent<IProps> {
     }
   }
 
+  changeTab = (tab) => {
+    this.setState({ tab }, () => this.loadItems())
+  }
+
   render() {
     const {
       error,
@@ -388,7 +393,7 @@ class PerformerProfile extends PureComponent<IProps> {
       total: totalGalleries,
       requesting: loadingGallery,
     } = galleryProps;
-    const { showWelcomVideo, openSubscriptionModal, submiting, currentTab } = this.state;
+    const { showWelcomVideo, openSubscriptionModal, submiting, currentTab, tab } = this.state;
     return (
       <Layout>
         <Head>
@@ -502,25 +507,31 @@ class PerformerProfile extends PureComponent<IProps> {
             </div>
             <div className="profile-list">
               <ul className="mb-0">
-                <li className={`inline-block ${currentTab === "feed" && "active"}`} onClick={() => this.changeTab("feed")}>
+                <li className={`inline-block ${tab === "feed" && "active"}`} onClick={() => this.changeTab("feed")}>
                   <h5 className="font-bold mb-0 block">
                     {shortenLargeNumber(performer?.stats?.totalGalleries || 0)}
                   </h5>
-                  <small className="text-muted profile-list-btn">Feed</small>
+                  <small className="text-muted profile-list-btn">feed</small>
                 </li>
-                <li className={`inline-block ${currentTab === "clips" && "active"}`} onClick={() => this.changeTab("clips")}>
+                <li className={`inline-block ${tab === "video" && "active"}`} onClick={() => this.changeTab("video")}>
+                  <h5 className="font-bold mb-0 block">
+                    {shortenLargeNumber(performer?.stats?.totalGalleries || 0)}
+                  </h5>
+                  <small className="text-muted profile-list-btn">video</small>
+                </li>
+                <li className={`inline-block ${tab === "saleVideo" && "active"}`} onClick={() => this.changeTab("saleVideo")}>
                   <h5 className="font-bold mb-0 block">
                     {shortenLargeNumber(performer?.stats?.totalVideos || 0)}{" "}
                   </h5>
-                  <small className="text-muted">Clips</small>
+                  <small className="text-muted">saleVideo</small>
                 </li>
-                <li className={`inline-block ${currentTab === "pic-set" && "active"}`} onClick={() => this.changeTab("pic-set")}>
+                <li className={`inline-block ${tab === "gallery" && "active"}`} onClick={() => this.changeTab("gallery")}>
                   <h5 className="font-bold mb-0 block">
                     {shortenLargeNumber(performer?.stats?.totalPhotos || 0)}
                   </h5>
-                  <small className="text-muted">Pic Set</small>
+                  <small className="text-muted">gallery</small>
                 </li>
-                <li className={`inline-block ${currentTab === "about" && "active"}`} onClick={() => this.changeTab("about")}>
+                <li className={`inline-block ${tab === "store" && "active"}`} onClick={() => this.changeTab("store")}>
                   <h5 className="font-bold mb-0 block">
                     My
                   </h5>
@@ -578,8 +589,9 @@ class PerformerProfile extends PureComponent<IProps> {
                         <h5>@{performer?.username || "n/a"}</h5>
                       </div>
                       <div className="social-icon-wrapper">
-                        <WhatsAppOutlined className="social-icon" />
-                        <TwitterOutlined className="social-icon" />
+                        <RiSnapchatLine className="social-icon" />
+                        {/* <WhatsAppOutlined className="social-icon" /> */}
+                        <RiTwitterLine className="social-icon" />
                         <InstagramOutlined className="social-icon" />
                       </div>
                       <div className="user-bio">
@@ -620,252 +632,178 @@ class PerformerProfile extends PureComponent<IProps> {
                 </div>
               </Col>
               <Col span={13}>
-                <Row gutter={16}>
+                {/* <Row gutter={16}>
                   {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(value => {
                     return <Col span={12}>
                       <ProfileCard />
                     </Col>
                   })}
-                </Row>
+                </Row> */}
+                <div className="inner-content-wrapper-new">
+                  {tab === 'video' ? (
+                    <>
+                      {/* <div className="heading-tab">
+                      <h4>
+                        {totalVideos > 1 ? `${totalVideos} VIDEOS` : 'VIDEO'}
+                      </h4>
+                    </div> */}
+                      <ScrollListVideo
+                        items={videos}
+                        loading={loadingVid}
+                        canLoadmore={videos && videos.length < totalVideos}
+                        loadMore={this.loadMoreItem.bind(this)}
+                      />
+                    </>
+                  ) : (tab === 'saleVideo' ? (
+                    <>
+                      <div className="heading-tab">
+                        <h4>
+                          {totalVods > 1 ? `${totalVods} SALE VIDEOS` : 'SALE VIDEO'}
+                        </h4>
+                      </div>
+                      <ScrollListVideo
+                        items={saleVideos}
+                        loading={loadingVod}
+                        canLoadmore={saleVideos && saleVideos.length < totalVods}
+                        loadMore={this.loadMoreItem.bind(this)}
+                      />
+                    </>
+                  ) : (tab === 'gallery' ? (
+                    <>
+                      {/* <div className="heading-tab">
+                        <h4>
+                          {totalGalleries > 1 ? `${totalGalleries} GALLERIES` : 'GALLERY'}
+                        </h4>
+                      </div> */}
+                      <ScrollListGallery
+                        items={galleries}
+                        loading={loadingGallery}
+                        canLoadmore={galleries && galleries.length < totalGalleries}
+                        loadMore={this.loadMoreItem.bind(this)}
+                      />
+                    </>
+                  ) : (tab === 'store' ? (
+                    <>
+                      <div className="heading-tab">
+                        <h4>
+                          {totalProducts > 1 ? `${totalProducts} PRODUCTS` : 'PRODUCT'}
+                        </h4>
+                      </div>
+                      <ScrollListProduct
+                        items={products}
+                        loading={loadingProduct}
+                        canLoadmore={products && products.length < totalProducts}
+                        loadMore={this.loadMoreItem.bind(this)}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <FeedList
+                        items={/* videos */[0, 1, 2, 3, 4, 5, 6]}
+                        loading={loadingVid}
+                        canLoadmore={videos && videos.length < totalVideos}
+                        loadMore={this.loadMoreItem.bind(this)}
+                      />
+                    </>
+                  ))
+                  ))}
+                </div>
               </Col>
             </Row>
           </div>
-          {/* <div className="model-content-wrapper">
-            <div className="main-profile-new">
-              <div className="fl-col-new">
-                <img alt="Avatar" src={performer?.avatar || "/no-avatar.png"} />
-                <p>last seen 20 minutes ago</p>
-                <Button
-                  className="primary btn-follow"
-                  onClick={() => this.handleClickMessage()}
-                >
-                  Followed
-                </Button>
-
-                <ul className="mb-0 social-icon-wrapper">
-                  <li className="inline-block">
-                    <WhatsAppOutlined className="social-icon-small" />
-                    <small className="text-muted">
-                      {" "}
-                      <i className="fas fa-image mr-1"></i>Videos
-                    </small>
-                  </li>
-                  <li className="inline-block">
-                    <WhatsAppOutlined className="social-icon-small" />
-                    <small className="text-muted">
-                      {" "}
-                      <i className="fas fa-image mr-1"></i>Videos
-                    </small>
-                  </li>
-                  <li className="inline-block">
-                    <WhatsAppOutlined className="social-icon-small" />
-                    <small className="text-muted">
-                      {" "}
-                      <i className="fas fa-image mr-1"></i>Videos
-                    </small>
-                  </li>
-                  <li className="inline-block">
-                    <WhatsAppOutlined className="social-icon-small" />
-                    <small className="text-muted">
-                      {" "}
-                      <i className="fas fa-image mr-1"></i>Videos
-                    </small>
-                  </li>
-                </ul>
-
-                <div className="bg-white shadow rounded user-profile-box">
-                  <div className="m-user-name">
-                    <Tooltip title={performer?.name}>
-                      <h4>
-                        {performer?.name || "N/A"}
-                        &nbsp;
-                        {performer?.verifiedAccount && <TickIcon />}
-                      </h4>
-                    </Tooltip>
-                    <h5>@{performer?.username || "n/a"}</h5>
-                  </div>
-                  <div className="social-icon-wrapper">
-                    <WhatsAppOutlined className="social-icon" />
-                    <TwitterOutlined className="social-icon" />
-                    <InstagramOutlined className="social-icon" />
-                  </div>
-                  <div className="user-bio">
-                    <h5>{performer?.bio || "n/a"}</h5>
-                  </div>
-                  <ul className="user-profile-list-wrapper">
-                    <li className="inline-block">
-                      <WhatsAppOutlined className="user-profile-list-icon" />
-                      <small className="text-muted">
-                        {" "}
-                        <i className="fas fa-image mr-1"></i>Videos
-                      </small>
-                    </li>
-                    <li className="inline-block">
-                      <WhatsAppOutlined className="user-profile-list-icon" />
-                      <small className="text-muted">
-                        {" "}
-                        <i className="fas fa-image mr-1"></i>Videos
-                      </small>
-                    </li>
-                    <li className="inline-block">
-                      <WhatsAppOutlined className="user-profile-list-icon" />
-                      <small className="text-muted">
-                        {" "}
-                        <i className="fas fa-image mr-1"></i>Videos
-                      </small>
-                    </li>
-                    <li className="inline-block">
-                      <WhatsAppOutlined className="user-profile-list-icon" />
-                      <small className="text-muted">
-                        {" "}
-                        <i className="fas fa-image mr-1"></i>Videos
-                      </small>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="btn-grp">
-                {user && !user.isPerformer && (
-                  <Button
-                    className="primary"
-                    onClick={() => this.handleClickMessage()}
-                  >
-                    <MessageIcon /> Message
-                  </Button>
-                )}
-              </div>
-              <div className={user.isPerformer ? "mar-0 pro-desc" : "pro-desc"}>
-                <PerformerInfo countries={countries} performer={performer} />
-              </div>
-              {!performer?.isSubscribed && !user?.isPerformer && (
-                <div className="subscription-bl">
-                  <Button
-                    className="sub-btn"
-                    disabled={
-                      (submiting && this.subscriptionType === "monthly") ||
-                      user?.isPerformer
-                    }
-                    onClick={() => {
-                      this.subscriptionType = "monthly";
-                      this.handleClickSubscribe();
-                    }}
-                  >
-                    {`Monthly Subscription | $${performer?.monthlyPrice.toFixed(
-                      2
-                    )}`}
-                  </Button>
-                  <Button
-                    className="sub-btn"
-                    disabled={
-                      (submiting && this.subscriptionType === "yearly") ||
-                      user?.isPerformer
-                    }
-                    onClick={() => {
-                      this.subscriptionType = "yearly";
-                      this.handleClickSubscribe();
-                    }}
-                  >
-                    {`Yearly Subscription | $${performer?.yearlyPrice.toFixed(
-                      2
-                    )}`}
-                  </Button>
-                </div>
-              )}
-            </div>
-            <div className="model-content">
-              <Tabs
-                defaultActiveKey="Video"
-                className="model-tabs"
-                size="large"
-                onTabClick={(tab) =>
-                  this.setState({ tab }, () => this.loadItems())
+          {/* <div className="model-content">
+            <Tabs
+              defaultActiveKey="Video"
+              className="model-tabs"
+              size="large"
+              onTabClick={(tab) =>
+                this.setState({ tab }, () => this.loadItems())
+              }
+            >
+              <TabPane
+                tab={
+                  <Tooltip placement="top" title="Videos">
+                    <VideoCameraOutlined />
+                  </Tooltip>
                 }
+                key="video"
               >
-                <TabPane
-                  tab={
-                    <Tooltip placement="top" title="Videos">
-                      <VideoCameraOutlined />
-                    </Tooltip>
-                  }
-                  key="video"
-                >
-                  <div className="heading-tab">
-                    <h4>
-                      {totalVideos > 1 ? `${totalVideos} VIDEOS` : 'VIDEO'}
-                    </h4>
-                  </div>
-                  <ScrollListVideo
-                    items={videos}
-                    loading={loadingVid}
-                    canLoadmore={videos && videos.length < totalVideos}
-                    loadMore={this.loadMoreItem.bind(this)}
-                  />
-                </TabPane>
-                <TabPane
-                  tab={
-                    <Tooltip placement="top" title="Premium content">
-                      <span>
-                        <SaleVidIcon />
-                      </span>
-                    </Tooltip>
-                  }
-                  key="saleVideo"
-                >
-                  <div className="heading-tab">
-                    <h4>
-                      {totalVods > 1 ? `${totalVods} SALE VIDEOS` : 'SALE VIDEO'}
-                    </h4>
-                  </div>
-                  <ScrollListVideo
-                    items={saleVideos}
-                    loading={loadingVod}
-                    canLoadmore={saleVideos && saleVideos.length < totalVods}
-                    loadMore={this.loadMoreItem.bind(this)}
-                  />
-                </TabPane>
-                <TabPane
-                  tab={
-                    <Tooltip placement="top" title="Galleries">
-                      <PictureOutlined />
-                    </Tooltip>
-                  }
-                  key="gallery"
-                >
-                  <div className="heading-tab">
-                    <h4>
-                      {totalGalleries > 1 ? `${totalGalleries} GALLERIES` : 'GALLERY'}
-                    </h4>
-                  </div>
-                  <ScrollListGallery
-                    items={galleries}
-                    loading={loadingGallery}
-                    canLoadmore={galleries && galleries.length < totalGalleries}
-                    loadMore={this.loadMoreItem.bind(this)}
-                  />
-                </TabPane>
+                <div className="heading-tab">
+                  <h4>
+                    {totalVideos > 1 ? `${totalVideos} VIDEOS` : 'VIDEO'}
+                  </h4>
+                </div>
+                <ScrollListVideo
+                  items={videos}
+                  loading={loadingVid}
+                  canLoadmore={videos && videos.length < totalVideos}
+                  loadMore={this.loadMoreItem.bind(this)}
+                />
+              </TabPane>
+              <TabPane
+                tab={
+                  <Tooltip placement="top" title="Premium content">
+                    <span>
+                      <SaleVidIcon />
+                    </span>
+                  </Tooltip>
+                }
+                key="saleVideo"
+              >
+                <div className="heading-tab">
+                  <h4>
+                    {totalVods > 1 ? `${totalVods} SALE VIDEOS` : 'SALE VIDEO'}
+                  </h4>
+                </div>
+                <ScrollListVideo
+                  items={saleVideos}
+                  loading={loadingVod}
+                  canLoadmore={saleVideos && saleVideos.length < totalVods}
+                  loadMore={this.loadMoreItem.bind(this)}
+                />
+              </TabPane>
+              <TabPane
+                tab={
+                  <Tooltip placement="top" title="Galleries">
+                    <PictureOutlined />
+                  </Tooltip>
+                }
+                key="gallery"
+              >
+                <div className="heading-tab">
+                  <h4>
+                    {totalGalleries > 1 ? `${totalGalleries} GALLERIES` : 'GALLERY'}
+                  </h4>
+                </div>
+                <ScrollListGallery
+                  items={galleries}
+                  loading={loadingGallery}
+                  canLoadmore={galleries && galleries.length < totalGalleries}
+                  loadMore={this.loadMoreItem.bind(this)}
+                />
+              </TabPane>
 
-                <TabPane
-                  tab={
-                    <Tooltip placement="top" title="Merchandise">
-                      <ShoppingOutlined />
-                    </Tooltip>
-                  }
-                  key="store"
-                >
-                  <div className="heading-tab">
-                    <h4>
-                      {totalProducts > 1 ? `${totalProducts} PRODUCTS` : 'PRODUCT'}
-                    </h4>
-                  </div>
-                  <ScrollListProduct
-                    items={products}
-                    loading={loadingProduct}
-                    canLoadmore={products && products.length < totalProducts}
-                    loadMore={this.loadMoreItem.bind(this)}
-                  />
-                </TabPane>
-              </Tabs>
-            </div>
+              <TabPane
+                tab={
+                  <Tooltip placement="top" title="Merchandise">
+                    <ShoppingOutlined />
+                  </Tooltip>
+                }
+                key="store"
+              >
+                <div className="heading-tab">
+                  <h4>
+                    {totalProducts > 1 ? `${totalProducts} PRODUCTS` : 'PRODUCT'}
+                  </h4>
+                </div>
+                <ScrollListProduct
+                  items={products}
+                  loading={loadingProduct}
+                  canLoadmore={products && products.length < totalProducts}
+                  loadMore={this.loadMoreItem.bind(this)}
+                />
+              </TabPane>
+            </Tabs>
           </div> */}
         </div>
         {performer &&

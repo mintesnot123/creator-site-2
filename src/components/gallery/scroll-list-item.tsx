@@ -27,18 +27,13 @@ export class ScrollListGallery extends PureComponent<IProps> {
       >
         <Row>
           {items.length > 0
-              && items.map((gallery: IGallery) => (
-                <Col
-                  xs={12}
-                  sm={12}
-                  md={8}
-                  lg={6}
-                  xl={6}
-                  key={gallery._id}
-                >
-                  <GalleryCard gallery={gallery} />
-                </Col>
-              ))}
+            && items.map((gallery: IGallery) => (
+              <Col xs={24} sm={24} md={12} lg={12}
+                key={gallery._id}
+              >
+                <GalleryCard gallery={gallery} />
+              </Col>
+            ))}
         </Row>
         {!loading && !items.length && <div className="text-center">No gallery was found</div>}
         {loading && <div className="text-center"><Spin /></div>}
