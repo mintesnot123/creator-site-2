@@ -198,6 +198,7 @@
     text-align: center;
     padding: 0.5rem;
 
+
     h4 {
       width: 100%;
       text-overflow: ellipsis;
@@ -219,6 +220,12 @@
       font-weight: 600;
     }
 
+    .border-bottom {
+      border-bottom: 2px solid @primary-color;
+      width: 60px;
+      margin: 0 auto;
+    }
+
     .anticon {
       color: @primary-color;
       font-size: 18px;
@@ -229,6 +236,10 @@
     padding: 8px 20px;
     width: 100%;
     text-align: left;
+
+    h5 {
+      font-size: medium;
+    }
   }
 
   .user-profile-list-wrapper {
@@ -254,6 +265,13 @@
     }
 
 
+  }
+
+  .view-more-btn {
+    color: @primary-color;
+    cursor: pointer;
+    font-size: medium;
+    font-weight: 550;
   }
 
   @media screen and (max-width: @mobile-screen) {

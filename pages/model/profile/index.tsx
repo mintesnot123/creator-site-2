@@ -52,7 +52,7 @@ import {
   IError,
 } from "src/interfaces";
 import Router from "next/router";
-import { formatDateNoTime } from '@lib/date';
+import { formatDateNoTime, getDiffDate } from '@lib/date';
 import { Row, Col, Divider, Card, Avatar } from "antd";
 import { RiSnapchatLine, RiTwitterLine } from 'react-icons/ri';
 import { BsCameraVideoFill, BsCalendar, BsFlag } from 'react-icons/bs';
@@ -400,6 +400,7 @@ class PerformerProfile extends PureComponent<IProps> {
       requesting: loadingGallery,
     } = galleryProps;
     const { showWelcomVideo, openSubscriptionModal, submiting, currentTab, tab } = this.state;
+    const country = countries.length && countries.find((c) => c.name === performer?.country || c.code === performer?.country);
     return (
       <Layout>
         <Head>
@@ -600,6 +601,7 @@ class PerformerProfile extends PureComponent<IProps> {
                           </h4>
                         </Tooltip>
                         <h5>@{performer?.username || "n/a"}</h5>
+                        <div className="border-bottom"></div>
                       </div>
                       <div className="social-icon-wrapper">
                         <RiSnapchatLine className="social-icon" />
@@ -622,23 +624,21 @@ class PerformerProfile extends PureComponent<IProps> {
                           <IoMaleFemale className="user-profile-list-icon" />
                           <small className="text-muted">
                             {" "}
-                            <i className="fas fa-image mr-1"></i>{performer.gender}
+                            <i className="fas fa-image mr-1"></i>{performer?.gender}
                           </small>
                         </li>
-                        <li className="inline-block">
+                        {performer?.dateOfBirth && <li className="inline-block">
                           <WhatsAppOutlined className="user-profile-list-icon" />
                           <small className="text-muted">
-                            {" "}
-                            <i className="fas fa-image mr-1"></i>Videos
+                            {`${getDiffDate(performer?.dateOfBirth)}+`}
                           </small>
-                        </li>
-                        <li className="inline-block">
+                        </li>}
+                        {country && <li className="inline-block">
                           <BsFlag className="user-profile-list-icon" />
                           <small className="text-muted">
-                            {" "}
-                            <i className="fas fa-image mr-1"></i>Videos
+                            {country?.name}
                           </small>
-                        </li>
+                        </li>}
                         <li className="inline-block">
                           <IoLocationOutline className="user-profile-list-icon" />
                           <small className="text-muted">
