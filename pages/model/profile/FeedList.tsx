@@ -3,6 +3,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { Spin, Row, Col } from 'antd';
 import { IGallery } from '@interfaces/gallery';
 import ProfileCard from './ProfileCard';
+import AddPost from './AddPost';
 
 interface IProps {
     items: number[];
@@ -26,6 +27,11 @@ export class ScrollListGallery extends PureComponent<IProps> {
                 scrollThreshold={0.9}
             >
                 <Row>
+                    <Col xs={24} sm={24} md={16} lg={16}
+                        key={"add"}
+                    >
+                        <AddPost />
+                    </Col>
                     {items.length > 0
                         && items.map((gallery: number) => (
                             <Col xs={24} sm={24} md={16} lg={16}

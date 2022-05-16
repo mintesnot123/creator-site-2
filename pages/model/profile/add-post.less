@@ -1,17 +1,38 @@
-.add-post-card-wrapper:hover {
-    transition: box-shadow 0.3s, border-color 0.3s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.add-post-card-wrapper {
 
     .add-post-header-tabs-wrapper {
-        padding: 8px 5px;
+        padding: 2px 2px;
         margin-bottom: 10px;
 
         .add-post-header-tabs {
+            text-align: center;
             cursor: pointer;
             padding: 5px 8px;
+            font-size: medium;
+            font-weight: bolder;
+        }
+
+        .active {
             border-bottom: 3px solid @primary-color;
+        }
+    }
+
+    .post-card-textarea {
+        margin-bottom: 10px;
+    }
+
+    .post-card-image-drop {
+        margin-bottom: 15px;
+    }
+
+    .post-btn-wrapper {
+        .ant-btn-primary {
+            background-color: @primary-color;
+        }
+
+        .swith-label {
+            margin-left: 4px;
+            /* font-size: 12px; */
         }
     }
 }
