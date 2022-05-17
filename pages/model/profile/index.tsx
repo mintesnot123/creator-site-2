@@ -550,6 +550,16 @@ class PerformerProfile extends PureComponent<IProps> {
                     About
                   </small>
                 </li>
+                {isCurrentUserProfile &&
+                  <li className={`inline-block ${tab === "edit-profile" && "active"}`} onClick={() => this.changeTab("dit-profile")}>
+                    <h5 className="font-bold mb-0 block">
+                      Edit
+                    </h5>
+                    <small className="text-muted">
+                      Profile
+                    </small>
+                  </li>
+                }
               </ul>
             </div>
           </div>
@@ -563,38 +573,47 @@ class PerformerProfile extends PureComponent<IProps> {
                       src={performer?.avatar || "/no-avatar.png"}
                     />
                     <p>last seen 20 minutes ago</p>
-                    <Button
-                      className="primary btn-follow"
-                      onClick={() => this.handleClickMessage()}
-                    >
-                      Followed
-                    </Button>
-                    <ul className="social-icon-wrapper">
-                      {performer.isSubscribed ?
+                    {isCurrentUserProfile ?
+                      <Button
+                        className="primary btn-follow"
+                        onClick={() => this.handleClickMessage()}
+                      >
+                        Create campaign
+                      </Button>
+                      :
+                      <Button
+                        className="primary btn-follow"
+                        onClick={() => this.handleClickMessage()}
+                      >
+                        Followed
+                      </Button>}
+                    {!isCurrentUserProfile &&
+                      <ul className="social-icon-wrapper">
+                        {performer.isSubscribed ?
+                          <li className="inline-block">
+                            <IoIosSend className="social-icon-small" />
+                            <small className="text-muted">Chat</small>
+                          </li>
+                          :
+                          <li className="inline-block">
+                            <FaDollarSign className="social-icon-small" />{" "}{`${performer.monthlyPrice}/mo`}
+                            <small className="text-muted">Subscribe</small>
+                          </li>
+                        }
                         <li className="inline-block">
-                          <IoIosSend className="social-icon-small" />
-                          <small className="text-muted">Chat</small>
+                          <BsCameraVideoFill className="social-icon-small" />
+                          <small className="text-muted">Video Call</small>
                         </li>
-                        :
                         <li className="inline-block">
-                          <FaDollarSign className="social-icon-small" />{" "}{`${performer.monthlyPrice}/mo`}
-                          <small className="text-muted">Subscribe</small>
+                          <WhatsAppOutlined className="social-icon-small" />
+                          <small className="text-muted">Custom</small>
                         </li>
-                      }
-                      <li className="inline-block">
-                        <BsCameraVideoFill className="social-icon-small" />
-                        <small className="text-muted">Video Call</small>
-                      </li>
-                      <li className="inline-block">
-                        <WhatsAppOutlined className="social-icon-small" />
-                        <small className="text-muted">Custom</small>
-                      </li>
-                      <li className="inline-block">
-                        <FaDollarSign className="social-icon-small" />
-                        <small className="text-muted">Tip</small>
-                      </li>
-                    </ul>
-
+                        <li className="inline-block">
+                          <FaDollarSign className="social-icon-small" />
+                          <small className="text-muted">Tip</small>
+                        </li>
+                      </ul>
+                    }
                     <div className="banner-wrapper-new user-profile-box">
                       <div className="m-user-name">
                         <Tooltip title={performer?.name}>
