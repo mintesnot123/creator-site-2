@@ -10,12 +10,13 @@ interface IProps {
     canLoadmore: boolean;
     loadMore(): Function;
     loading: boolean;
+    isCurrentUserProfile: boolean;
 }
 
 export class ScrollListGallery extends PureComponent<IProps> {
     render() {
         const {
-            items = [], loadMore, canLoadmore = false, loading = false
+            items = [], loadMore, canLoadmore = false, loading = false, isCurrentUserProfile
         } = this.props;
         return (
             <InfiniteScroll
@@ -27,11 +28,13 @@ export class ScrollListGallery extends PureComponent<IProps> {
                 scrollThreshold={0.9}
             >
                 <Row>
-                    <Col xs={24} sm={24} md={16} lg={16}
-                        key={"add"}
-                    >
-                        <AddPost />
-                    </Col>
+                    {isCurrentUserProfile &&
+                        <Col xs={24} sm={24} md={16} lg={16}
+                            key={"add"}
+                        >
+                            <AddPost />
+                        </Col>
+                    }
                     {items.length > 0
                         && items.map((gallery: number) => (
                             <Col xs={24} sm={24} md={16} lg={16}

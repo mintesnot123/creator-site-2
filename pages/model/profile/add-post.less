@@ -1,5 +1,9 @@
 .add-post-card-wrapper {
 
+    .ant-card-body {
+        padding: 5px;
+    }
+    
     .add-post-header-tabs-wrapper {
         padding: 2px 2px;
         margin-bottom: 10px;
@@ -19,6 +23,34 @@
 
     .post-card-textarea {
         margin-bottom: 10px;
+    }
+
+    .button-tab-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: left;
+        align-items: center;
+        margin: 0 0 20px 0;
+
+        .tab-button {
+            margin-right: 10px;
+
+            .ant-btn-primary {
+                background-color: darkgrey;
+                border: none;
+                padding: 0 40px;
+                color: black;
+            }
+        }
+
+        .active {
+            .ant-btn-primary {
+                background-color: dimgray;
+                border: none;
+                padding: 0 40px;
+                color: white;
+            }
+        }
     }
 
     .post-card-image-drop {

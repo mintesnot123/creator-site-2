@@ -60,6 +60,7 @@ import { IoIosSend } from 'react-icons/io';
 import { IoMaleFemale, IoLocationOutline } from 'react-icons/io5';
 import { FaDollarSign } from 'react-icons/fa';
 import FeedList from './FeedList';
+
 import "@components/performer/performer.less";
 import "./profile.less";
 import "./profile.css";
@@ -401,6 +402,9 @@ class PerformerProfile extends PureComponent<IProps> {
     } = galleryProps;
     const { showWelcomVideo, openSubscriptionModal, submiting, currentTab, tab } = this.state;
     const country = countries.length && countries.find((c) => c.name === performer?.country || c.code === performer?.country);
+    const isCurrentUserProfile = user._id === performer._id;
+    console.log('user', user);
+    console.log('performer', performer)
     return (
       <Layout>
         <Head>
@@ -720,6 +724,7 @@ class PerformerProfile extends PureComponent<IProps> {
                   ) : (
                     <>
                       <FeedList
+                        isCurrentUserProfile={isCurrentUserProfile}
                         items={/* videos */[0, 1, 2, 3, 4, 5, 6]}
                         loading={loadingVid}
                         canLoadmore={videos && videos.length < totalVideos}
