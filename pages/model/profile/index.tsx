@@ -52,14 +52,14 @@ import {
   IError,
 } from "src/interfaces";
 import Router from "next/router";
-import { formatDateNoTime, getDiffDate } from '@lib/date';
+import { formatDateNoTime, getDiffDate } from "@lib/date";
 import { Row, Col, Divider, Card, Avatar } from "antd";
-import { RiSnapchatLine, RiTwitterLine } from 'react-icons/ri';
-import { BsCameraVideoFill, BsCalendar, BsFlag } from 'react-icons/bs';
-import { IoIosSend } from 'react-icons/io';
-import { IoMaleFemale, IoLocationOutline } from 'react-icons/io5';
-import { FaDollarSign } from 'react-icons/fa';
-import FeedList from './FeedList';
+import { RiSnapchatLine, RiTwitterLine } from "react-icons/ri";
+import { BsCameraVideoFill, BsCalendar, BsFlag } from "react-icons/bs";
+import { IoIosSend } from "react-icons/io";
+import { IoMaleFemale, IoLocationOutline } from "react-icons/io5";
+import { FaDollarSign } from "react-icons/fa";
+import FeedList from "./FeedList";
 
 import "@components/performer/performer.less";
 import "./profile.less";
@@ -136,7 +136,7 @@ class PerformerProfile extends PureComponent<IProps> {
 
   async componentDidMount() {
     const { performer } = this.props;
-    console.log('performer', performer)
+    console.log("performer", performer);
     if (performer) {
       const notShownWelcomeVideos = localStorage.getItem(
         "notShownWelcomeVideos"
@@ -282,7 +282,8 @@ class PerformerProfile extends PureComponent<IProps> {
     }
     if (!performer.isSubscribed) {
       message.error(
-        `Please subscribe to ${performer?.name || performer?.username || "the model"
+        `Please subscribe to ${
+          performer?.name || performer?.username || "the model"
         } to start chatting`
       );
       return;
@@ -333,8 +334,8 @@ class PerformerProfile extends PureComponent<IProps> {
   }
 
   changeTab = (tab) => {
-    this.setState({ tab }, () => this.loadItems())
-  }
+    this.setState({ tab }, () => this.loadItems());
+  };
 
   render() {
     const {
@@ -400,17 +401,28 @@ class PerformerProfile extends PureComponent<IProps> {
       total: totalGalleries,
       requesting: loadingGallery,
     } = galleryProps;
-    const { showWelcomVideo, openSubscriptionModal, submiting, currentTab, tab } = this.state;
-    const country = countries.length && countries.find((c) => c.name === performer?.country || c.code === performer?.country);
+    const {
+      showWelcomVideo,
+      openSubscriptionModal,
+      submiting,
+      currentTab,
+      tab,
+    } = this.state;
+    const country =
+      countries.length &&
+      countries.find(
+        (c) => c.name === performer?.country || c.code === performer?.country
+      );
     const isCurrentUserProfile = user._id === performer._id;
-    console.log('user', user);
-    console.log('performer', performer)
+    console.log("user", user);
+    console.log("performer", performer);
     return (
       <Layout>
         <Head>
           <title>
-            {`${ui?.siteName} | ${performer?.name || performer?.username || ""
-              }`}
+            {`${ui?.siteName} | ${
+              performer?.name || performer?.username || ""
+            }`}
           </title>
           <meta
             name="keywords"
@@ -420,8 +432,9 @@ class PerformerProfile extends PureComponent<IProps> {
           {/* OG tags */}
           <meta
             property="og:title"
-            content={`${ui?.siteName} | ${performer?.name || performer?.username || ""
-              }`}
+            content={`${ui?.siteName} | ${
+              performer?.name || performer?.username || ""
+            }`}
             key="title"
           />
           <meta
@@ -436,8 +449,9 @@ class PerformerProfile extends PureComponent<IProps> {
           {/* Twitter tags */}
           <meta
             name="twitter:title"
-            content={`${ui?.siteName} | ${performer?.name || performer?.username || ""
-              }`}
+            content={`${ui?.siteName} | ${
+              performer?.name || performer?.username || ""
+            }`}
           />
           <meta
             name="twitter:image"
@@ -518,164 +532,226 @@ class PerformerProfile extends PureComponent<IProps> {
             </div>
             <div className="profile-list">
               <ul className="mb-0">
-                <li className={`inline-block ${tab === "feed" && "active"}`} onClick={() => this.changeTab("feed")}>
+                <li
+                  className={`inline-block ${tab === "feed" && "active"}`}
+                  onClick={() => this.changeTab("feed")}
+                >
                   <h5 className="font-bold mb-0 block">
                     {shortenLargeNumber(performer?.stats?.totalGalleries || 0)}
                   </h5>
                   <small className="text-muted profile-list-btn">feed</small>
                 </li>
-                <li className={`inline-block ${tab === "video" && "active"}`} onClick={() => this.changeTab("video")}>
+                <li
+                  className={`inline-block ${tab === "video" && "active"}`}
+                  onClick={() => this.changeTab("video")}
+                >
                   <h5 className="font-bold mb-0 block">
                     {shortenLargeNumber(performer?.stats?.totalGalleries || 0)}
                   </h5>
                   <small className="text-muted profile-list-btn">video</small>
                 </li>
-                <li className={`inline-block ${tab === "saleVideo" && "active"}`} onClick={() => this.changeTab("saleVideo")}>
+                <li
+                  className={`inline-block ${tab === "saleVideo" && "active"}`}
+                  onClick={() => this.changeTab("saleVideo")}
+                >
                   <h5 className="font-bold mb-0 block">
                     {shortenLargeNumber(performer?.stats?.totalVideos || 0)}{" "}
                   </h5>
                   <small className="text-muted">saleVideo</small>
                 </li>
-                <li className={`inline-block ${tab === "gallery" && "active"}`} onClick={() => this.changeTab("gallery")}>
+                <li
+                  className={`inline-block ${tab === "gallery" && "active"}`}
+                  onClick={() => this.changeTab("gallery")}
+                >
                   <h5 className="font-bold mb-0 block">
                     {shortenLargeNumber(performer?.stats?.totalPhotos || 0)}
                   </h5>
                   <small className="text-muted">gallery</small>
                 </li>
-                <li className={`inline-block ${tab === "store" && "active"}`} onClick={() => this.changeTab("store")}>
-                  <h5 className="font-bold mb-0 block">
-                    My
-                  </h5>
-                  <small className="text-muted">
-                    About
-                  </small>
+                <li
+                  className={`inline-block ${tab === "store" && "active"}`}
+                  onClick={() => this.changeTab("store")}
+                >
+                  <h5 className="font-bold mb-0 block">My</h5>
+                  <small className="text-muted">About</small>
                 </li>
-                {isCurrentUserProfile &&
-                  <li className={`inline-block ${tab === "edit-profile" && "active"}`} onClick={() => this.changeTab("dit-profile")}>
-                    <h5 className="font-bold mb-0 block">
-                      Edit
-                    </h5>
-                    <small className="text-muted">
-                      Profile
-                    </small>
+                {isCurrentUserProfile && (
+                  <li
+                    className={`inline-block ${
+                      tab === "edit-profile" && "active"
+                    }`}
+                    onClick={() => this.changeTab("dit-profile")}
+                  >
+                    <h5 className="font-bold mb-0 block">Edit</h5>
+                    <small className="text-muted">Profile</small>
                   </li>
-                }
+                )}
               </ul>
             </div>
           </div>
           <div className="model-content-wrapper-new">
-            <Row justify="center" gutter={32}>
-              <Col span={5}>
+            <Row justify="center" gutter={{ xxl: 32, xl: 32, lg: 16, md: 12 }}>
+              <Col
+                sm={{ span: 22 }}
+                md={{ span: 7 }}
+                lg={{ span: 6 }}
+                xl={{ span: 5 }}
+                xxl={{ span: 4 }}
+              >
                 <div className="main-profile-new">
                   <div className="fl-col-new">
                     <img
                       alt="Avatar"
                       src={performer?.avatar || "/no-avatar.png"}
                     />
-                    <p>last seen 20 minutes ago</p>
-                    {isCurrentUserProfile ?
-                      <Button
-                        className="primary btn-follow"
-                        onClick={() => this.handleClickMessage()}
-                      >
-                        Create campaign
-                      </Button>
-                      :
-                      <Button
-                        className="primary btn-follow"
-                        onClick={() => this.handleClickMessage()}
-                      >
-                        Followed
-                      </Button>}
-                    {!isCurrentUserProfile &&
-                      <ul className="social-icon-wrapper">
-                        {performer.isSubscribed ?
+                    <div className="user-profile-detail-sm-wrapper m-user-name-sm">
+                      <Tooltip title={performer?.name}>
+                        <h4>
+                          {performer?.name || "N/A"}
+                          &nbsp;
+                          {performer?.verifiedAccount && <TickIcon />}
+                        </h4>
+                      </Tooltip>
+                      <h5>@{performer?.username || "n/a"}</h5>
+                      <div className="border-bottom"></div>
+                    </div>
+                    <div className="user-profile-detail-sm-wrapper">
+                      {isCurrentUserProfile ? (
+                        <Button
+                          className="primary btn-follow"
+                          onClick={() => this.handleClickMessage()}
+                        >
+                          Create campaign
+                        </Button>
+                      ) : (
+                        <Button
+                          className="primary btn-follow"
+                          onClick={() => this.handleClickMessage()}
+                        >
+                          Followed
+                        </Button>
+                      )}
+                    </div>
+                    <div className="user-profile-detail-md-wrapper">
+                      <p>last seen 20 minutes ago</p>
+                      {isCurrentUserProfile ? (
+                        <Button
+                          className="primary btn-follow"
+                          onClick={() => this.handleClickMessage()}
+                        >
+                          Create campaign
+                        </Button>
+                      ) : (
+                        <Button
+                          className="primary btn-follow"
+                          onClick={() => this.handleClickMessage()}
+                        >
+                          Followed
+                        </Button>
+                      )}
+                      {!isCurrentUserProfile && (
+                        <ul className="social-icon-wrapper">
+                          {performer.isSubscribed ? (
+                            <li className="inline-block">
+                              <IoIosSend className="social-icon-small" />
+                              <small className="text-muted">Chat</small>
+                            </li>
+                          ) : (
+                            <li className="inline-block">
+                              <FaDollarSign className="social-icon-small" />{" "}
+                              {`${performer.monthlyPrice}/mo`}
+                              <small className="text-muted">Subscribe</small>
+                            </li>
+                          )}
                           <li className="inline-block">
-                            <IoIosSend className="social-icon-small" />
-                            <small className="text-muted">Chat</small>
+                            <BsCameraVideoFill className="social-icon-small" />
+                            <small className="text-muted">Video Call</small>
                           </li>
-                          :
                           <li className="inline-block">
-                            <FaDollarSign className="social-icon-small" />{" "}{`${performer.monthlyPrice}/mo`}
-                            <small className="text-muted">Subscribe</small>
+                            <WhatsAppOutlined className="social-icon-small" />
+                            <small className="text-muted">Custom</small>
                           </li>
-                        }
-                        <li className="inline-block">
-                          <BsCameraVideoFill className="social-icon-small" />
-                          <small className="text-muted">Video Call</small>
-                        </li>
-                        <li className="inline-block">
-                          <WhatsAppOutlined className="social-icon-small" />
-                          <small className="text-muted">Custom</small>
-                        </li>
-                        <li className="inline-block">
-                          <FaDollarSign className="social-icon-small" />
-                          <small className="text-muted">Tip</small>
-                        </li>
-                      </ul>
-                    }
-                    <div className="banner-wrapper-new user-profile-box">
-                      <div className="m-user-name">
-                        <Tooltip title={performer?.name}>
-                          <h4>
-                            {performer?.name || "N/A"}
-                            &nbsp;
-                            {performer?.verifiedAccount && <TickIcon />}
-                          </h4>
-                        </Tooltip>
-                        <h5>@{performer?.username || "n/a"}</h5>
-                        <div className="border-bottom"></div>
+                          <li className="inline-block">
+                            <FaDollarSign className="social-icon-small" />
+                            <small className="text-muted">Tip</small>
+                          </li>
+                        </ul>
+                      )}
+                      <div className="banner-wrapper-new user-profile-box">
+                        <div className="m-user-name">
+                          <Tooltip title={performer?.name}>
+                            <h4>
+                              {performer?.name || "N/A"}
+                              &nbsp;
+                              {performer?.verifiedAccount && <TickIcon />}
+                            </h4>
+                          </Tooltip>
+                          <h5>@{performer?.username || "n/a"}</h5>
+                          <div className="border-bottom"></div>
+                        </div>
+                        <div className="social-icon-wrapper">
+                          <RiSnapchatLine className="social-icon" />
+                          {/* <WhatsAppOutlined className="social-icon" /> */}
+                          <RiTwitterLine className="social-icon" />
+                          <InstagramOutlined className="social-icon" />
+                        </div>
+                        <div className="user-bio">
+                          <h5>{performer?.bio || "n/a"}</h5>
+                        </div>
+                        <ul className="user-profile-list-wrapper">
+                          <li className="inline-block">
+                            <BsCalendar className="user-profile-list-icon" />
+                            <small className="text-muted">
+                              {" "}
+                              <i className="fas fa-image mr-1"></i>
+                              {formatDateNoTime(performer.createdAt)}
+                            </small>
+                          </li>
+                          <li className="inline-block">
+                            <IoMaleFemale className="user-profile-list-icon" />
+                            <small className="text-muted">
+                              {" "}
+                              <i className="fas fa-image mr-1"></i>
+                              {performer?.gender}
+                            </small>
+                          </li>
+                          {performer?.dateOfBirth && (
+                            <li className="inline-block">
+                              <WhatsAppOutlined className="user-profile-list-icon" />
+                              <small className="text-muted">
+                                {`${getDiffDate(performer?.dateOfBirth)}+`}
+                              </small>
+                            </li>
+                          )}
+                          {country && (
+                            <li className="inline-block">
+                              <BsFlag className="user-profile-list-icon" />
+                              <small className="text-muted">
+                                {country?.name}
+                              </small>
+                            </li>
+                          )}
+                          <li className="inline-block">
+                            <IoLocationOutline className="user-profile-list-icon" />
+                            <small className="text-muted">
+                              {" "}
+                              <i className="fas fa-image mr-1"></i>Videos
+                            </small>
+                          </li>
+                        </ul>
+                        <p className="view-more-btn">View More</p>
                       </div>
-                      <div className="social-icon-wrapper">
-                        <RiSnapchatLine className="social-icon" />
-                        {/* <WhatsAppOutlined className="social-icon" /> */}
-                        <RiTwitterLine className="social-icon" />
-                        <InstagramOutlined className="social-icon" />
-                      </div>
-                      <div className="user-bio">
-                        <h5>{performer?.bio || "n/a"}</h5>
-                      </div>
-                      <ul className="user-profile-list-wrapper">
-                        <li className="inline-block">
-                          <BsCalendar className="user-profile-list-icon" />
-                          <small className="text-muted">
-                            {" "}
-                            <i className="fas fa-image mr-1"></i>{formatDateNoTime(performer.createdAt)}
-                          </small>
-                        </li>
-                        <li className="inline-block">
-                          <IoMaleFemale className="user-profile-list-icon" />
-                          <small className="text-muted">
-                            {" "}
-                            <i className="fas fa-image mr-1"></i>{performer?.gender}
-                          </small>
-                        </li>
-                        {performer?.dateOfBirth && <li className="inline-block">
-                          <WhatsAppOutlined className="user-profile-list-icon" />
-                          <small className="text-muted">
-                            {`${getDiffDate(performer?.dateOfBirth)}+`}
-                          </small>
-                        </li>}
-                        {country && <li className="inline-block">
-                          <BsFlag className="user-profile-list-icon" />
-                          <small className="text-muted">
-                            {country?.name}
-                          </small>
-                        </li>}
-                        <li className="inline-block">
-                          <IoLocationOutline className="user-profile-list-icon" />
-                          <small className="text-muted">
-                            {" "}
-                            <i className="fas fa-image mr-1"></i>Videos
-                          </small>
-                        </li>
-                      </ul>
-                      <p className="view-more-btn">View More</p>
                     </div>
                   </div>
                 </div>
               </Col>
-              <Col span={13}>
+              <Col
+                sm={{ span: 22 }}
+                md={{ span: 16 }}
+                lg={{ span: 16 }}
+                xl={{ span: 13 }}
+                xxl={{ span: 12 }}
+              >
                 {/* <Row gutter={16}>
                   {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(value => {
                     return <Col span={12}>
@@ -684,7 +760,7 @@ class PerformerProfile extends PureComponent<IProps> {
                   })}
                 </Row> */}
                 <div className="inner-content-wrapper-new">
-                  {tab === 'video' ? (
+                  {tab === "video" ? (
                     <>
                       {/* <div className="heading-tab">
                       <h4>
@@ -698,21 +774,25 @@ class PerformerProfile extends PureComponent<IProps> {
                         loadMore={this.loadMoreItem.bind(this)}
                       />
                     </>
-                  ) : (tab === 'saleVideo' ? (
+                  ) : tab === "saleVideo" ? (
                     <>
                       <div className="heading-tab">
                         <h4>
-                          {totalVods > 1 ? `${totalVods} SALE VIDEOS` : 'SALE VIDEO'}
+                          {totalVods > 1
+                            ? `${totalVods} SALE VIDEOS`
+                            : "SALE VIDEO"}
                         </h4>
                       </div>
                       <ScrollListVideo
                         items={saleVideos}
                         loading={loadingVod}
-                        canLoadmore={saleVideos && saleVideos.length < totalVods}
+                        canLoadmore={
+                          saleVideos && saleVideos.length < totalVods
+                        }
                         loadMore={this.loadMoreItem.bind(this)}
                       />
                     </>
-                  ) : (tab === 'gallery' ? (
+                  ) : tab === "gallery" ? (
                     <>
                       {/* <div className="heading-tab">
                         <h4>
@@ -722,21 +802,27 @@ class PerformerProfile extends PureComponent<IProps> {
                       <ScrollListGallery
                         items={galleries}
                         loading={loadingGallery}
-                        canLoadmore={galleries && galleries.length < totalGalleries}
+                        canLoadmore={
+                          galleries && galleries.length < totalGalleries
+                        }
                         loadMore={this.loadMoreItem.bind(this)}
                       />
                     </>
-                  ) : (tab === 'store' ? (
+                  ) : tab === "store" ? (
                     <>
                       <div className="heading-tab">
                         <h4>
-                          {totalProducts > 1 ? `${totalProducts} PRODUCTS` : 'PRODUCT'}
+                          {totalProducts > 1
+                            ? `${totalProducts} PRODUCTS`
+                            : "PRODUCT"}
                         </h4>
                       </div>
                       <ScrollListProduct
                         items={products}
                         loading={loadingProduct}
-                        canLoadmore={products && products.length < totalProducts}
+                        canLoadmore={
+                          products && products.length < totalProducts
+                        }
                         loadMore={this.loadMoreItem.bind(this)}
                       />
                     </>
@@ -744,14 +830,13 @@ class PerformerProfile extends PureComponent<IProps> {
                     <>
                       <FeedList
                         isCurrentUserProfile={isCurrentUserProfile}
-                        items={/* videos */[0, 1, 2, 3, 4, 5, 6]}
+                        items={/* videos */ [0, 1, 2, 3, 4, 5, 6]}
                         loading={loadingVid}
                         canLoadmore={videos && videos.length < totalVideos}
                         loadMore={this.loadMoreItem.bind(this)}
                       />
                     </>
-                  ))
-                  ))}
+                  )}
                 </div>
               </Col>
             </Row>
