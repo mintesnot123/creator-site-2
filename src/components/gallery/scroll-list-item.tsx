@@ -2,7 +2,8 @@ import { PureComponent } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Spin, Row, Col } from 'antd';
 import { IGallery } from '@interfaces/gallery';
-import GalleryCard from './gallery-card';
+import GalleryCard from './GalleryCard'/* './gallery-card' */;
+import LoaderList from '@components/elements/LoaderList'
 
 interface IProps {
   items: IGallery[];
@@ -36,7 +37,7 @@ export class ScrollListGallery extends PureComponent<IProps> {
             ))}
         </Row>
         {!loading && !items.length && <div className="text-center">No gallery was found</div>}
-        {loading && <div className="text-center"><Spin /></div>}
+        {loading && (!items.length ? <div style={{ width: "100%" }}><LoaderList row={1} column={2} /></div> : <div className="text-center"><Spin /></div>)}
       </InfiniteScroll>
     );
   }

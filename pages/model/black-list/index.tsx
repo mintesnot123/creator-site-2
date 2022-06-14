@@ -14,6 +14,7 @@ import { SelectUserDropdown } from '@components/user/select-users-dropdown';
 import { blockService, utilsService } from 'src/services';
 import UsersBlockList from '@components/user/users-block-list';
 import './index.less';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   ui: IUIConfig;
@@ -140,35 +141,36 @@ class blockPage extends PureComponent<IProps> {
             backIcon={<ArrowLeftOutlined />}
             title="Blacklist"
           />
-          <Tabs>
-            <Tabs.TabPane key="block-user" tab={<span>Blacklist Users</span>}>
-              <div className="block-user">
-                <Button className="" type="primary" onClick={() => this.setState({ openBlockModal: true })}>
-                  Block user
-                </Button>
-              </div>
-              <div className="users-blocked-list">
-                <UsersBlockList
-                  items={userBlockedList}
-                  searching={loading}
-                  total={totalBlockedUsers}
-                  onPaginationChange={this.handlePageChange.bind(this)}
-                  pageSize={limit}
-                  submiting={submiting}
-                  unblockUser={this.handleUnblockUser.bind(this)}
+          <ShadowBox>
+            <Tabs>
+              <Tabs.TabPane key="block-user" tab={<span>Blacklist Users</span>}>
+                <div className="block-user">
+                  <Button style={{marginBottom: "10px"}} className="" type="primary" onClick={() => this.setState({ openBlockModal: true })}>
+                    Block user
+                  </Button>
+                </div>
+                <div className="users-blocked-list">
+                  <UsersBlockList
+                    items={userBlockedList}
+                    searching={loading}
+                    total={totalBlockedUsers}
+                    onPaginationChange={this.handlePageChange.bind(this)}
+                    pageSize={limit}
+                    submiting={submiting}
+                    unblockUser={this.handleUnblockUser.bind(this)}
+                  />
+                </div>
+              </Tabs.TabPane>
+              <Tabs.TabPane key="block-countries" tab={<span>Blacklist Countries</span>}>
+                <PerformerBlockCountriesForm
+                  onFinish={this.handleUpdateBlockCountries.bind(this)}
+                  updating={submiting}
+                  blockCountries={user.blockCountries}
+                  countries={countries}
                 />
-              </div>
-            </Tabs.TabPane>
-            <Tabs.TabPane key="block-countries" tab={<span>Blacklist Countries</span>}>
-              <PerformerBlockCountriesForm
-                onFinish={this.handleUpdateBlockCountries.bind(this)}
-                updating={submiting}
-                blockCountries={user.blockCountries}
-                countries={countries}
-              />
-            </Tabs.TabPane>
-          </Tabs>
-
+              </Tabs.TabPane>
+            </Tabs>
+          </ShadowBox>
         </div>
         <Modal
           title="Block user"

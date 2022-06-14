@@ -11,6 +11,7 @@ import { TableListProduct } from '@components/product/table-list-product';
 import Link from 'next/link';
 import { connect } from 'react-redux';
 import { IPerformer, IUIConfig } from 'src/interfaces';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   performerId: string;
@@ -139,7 +140,7 @@ class Products extends PureComponent<IProps> {
             backIcon={<ArrowLeftOutlined />}
             title="My Store"
           />
-          <div>
+          <ShadowBox>
             <Row>
               <Col xl={21} md={14} xs={24}>
                 <SearchFilter
@@ -157,18 +158,20 @@ class Products extends PureComponent<IProps> {
                 </Button>
               </Col>
             </Row>
-          </div>
+          </ShadowBox>
           <div style={{ marginBottom: '20px' }} />
-          <div className="table-responsive">
-            <TableListProduct
-              dataSource={list}
-              rowKey="_id"
-              loading={searching}
-              pagination={{ ...pagination, showSizeChanger: false }}
-              onChange={this.handleTableChange.bind(this)}
-              deleteProduct={this.deleteProduct.bind(this)}
-            />
-          </div>
+          <ShadowBox>
+            <div className="table-responsive">
+              <TableListProduct
+                dataSource={list}
+                rowKey="_id"
+                loading={searching}
+                pagination={{ ...pagination, showSizeChanger: false }}
+                onChange={this.handleTableChange.bind(this)}
+                deleteProduct={this.deleteProduct.bind(this)}
+              />
+            </div>
+          </ShadowBox>
         </div>
       </Layout>
     );

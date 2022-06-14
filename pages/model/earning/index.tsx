@@ -15,6 +15,7 @@ import { earningService } from 'src/services';
 import { getResponseError } from '@lib/utils';
 import { TableListEarning } from '@components/performer/table-earning';
 import { SearchFilter } from 'src/components/common/search-filter';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   performer: IPerformer;
@@ -138,51 +139,57 @@ class EarningPage extends PureComponent<IProps, IStates> {
             backIcon={<ArrowLeftOutlined />}
             title="Earning Report"
           />
-          <SearchFilter
-            type={[
-              { key: '', text: 'All type' },
-              { key: 'video', text: 'VOD' },
-              { key: 'product', text: 'Store' },
-              { key: 'performer', text: 'Subscription' }
-            ]}
-            onSubmit={this.handleFilter.bind(this)}
-            dateRange
-          />
-          <Row gutter={16} style={{ marginBottom: '10px' }}>
-            <Col span={8}>
-              <Statistic
-                title="Total Gross Price"
-                prefix="$"
-                value={stats.totalGrossPrice || 0}
-                precision={2}
-              />
-            </Col>
-            <Col span={8}>
-              <Statistic
-                title="Admin earned"
-                prefix="$"
-                value={stats.totalCommission || 0}
-                precision={2}
-              />
-            </Col>
-            <Col span={8}>
-              <Statistic
-                title="You earned"
-                prefix="$"
-                value={stats.totalNetPrice || 0}
-                precision={2}
-              />
-            </Col>
-          </Row>
-          <div className="table-responsive">
-            <TableListEarning
-              loading={loading}
-              dataSource={earning}
-              rowKey="_id"
-              pagination={{ ...pagination, showSizeChanger: false }}
-              onChange={this.handleTabsChange.bind(this)}
+          <ShadowBox>
+            <SearchFilter
+              type={[
+                { key: '', text: 'All type' },
+                { key: 'video', text: 'VOD' },
+                { key: 'product', text: 'Store' },
+                { key: 'performer', text: 'Subscription' }
+              ]}
+              onSubmit={this.handleFilter.bind(this)}
+              dateRange
             />
-          </div>
+          </ShadowBox>
+          <ShadowBox>
+            <Row gutter={16} style={{ marginBottom: '10px' }}>
+              <Col span={8}>
+                <Statistic
+                  title="Total Gross Price"
+                  prefix="$"
+                  value={stats.totalGrossPrice || 0}
+                  precision={2}
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic
+                  title="Admin earned"
+                  prefix="$"
+                  value={stats.totalCommission || 0}
+                  precision={2}
+                />
+              </Col>
+              <Col span={8}>
+                <Statistic
+                  title="You earned"
+                  prefix="$"
+                  value={stats.totalNetPrice || 0}
+                  precision={2}
+                />
+              </Col>
+            </Row>
+          </ShadowBox>
+          <ShadowBox>
+            <div className="table-responsive">
+              <TableListEarning
+                loading={loading}
+                dataSource={earning}
+                rowKey="_id"
+                pagination={{ ...pagination, showSizeChanger: false }}
+                onChange={this.handleTabsChange.bind(this)}
+              />
+            </div>
+          </ShadowBox>
         </div>
       </Layout>
     );

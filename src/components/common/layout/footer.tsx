@@ -19,18 +19,18 @@ class Footer extends PureComponent<IProps> {
         <div className="main-container">
           <ul>
             {!currentUser._id && (
-            <>
-              <li className={router.pathname === '/auth/login' ? 'active' : ''}>
-                <Link href="/auth/login">
-                  <a>Log in</a>
-                </Link>
-              </li>
-              <li className={router.pathname === '/auth/register' ? 'active' : ''}>
-                <Link href={{ pathname: '/auth/register' }} as="/auth/register">
-                  <a>Sign up</a>
-                </Link>
-              </li>
-            </>
+              <>
+                <li className={router.pathname === '/auth/login' ? 'active' : ''}>
+                  <Link href="/auth/login">
+                    <a>Log in</a>
+                  </Link>
+                </li>
+                <li className={router.pathname === '/auth/register' ? 'active' : ''}>
+                  <Link href={{ pathname: '/auth/register' }} as="/auth/register">
+                    <a>Sign up</a>
+                  </Link>
+                </li>
+              </>
             )}
             {menus
               && menus.length > 0
@@ -64,4 +64,4 @@ const mapState = (state: any) => ({
   currentUser: state.user.current,
   ui: state.ui
 });
-export default withRouter(connect(mapState)(Footer));
+export default connect(mapState)(withRouter(Footer));

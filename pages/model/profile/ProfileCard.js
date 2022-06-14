@@ -6,7 +6,7 @@ import { FaComment, FaRegComment } from "react-icons/fa";
 import { RiShareForwardLine, RiShareForwardFill } from "react-icons/ri";
 
 import './profile-card.less';
-const ProfileCard = () => {
+const ProfileCard = ({ post }) => {
     const { Meta } = Card;
     return (
         <Card

@@ -429,4 +429,4 @@ const mapState = (state: any) => ({
   cart: state.cart
 });
 const mapDispatch = { logout, addCart, clearCart };
-export default withRouter(connect(mapState, mapDispatch)(Header));
+export default connect(mapState, mapDispatch)(withRouter(Header));

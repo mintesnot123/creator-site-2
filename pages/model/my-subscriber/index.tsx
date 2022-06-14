@@ -8,6 +8,7 @@ import { ISubscription, IUIConfig } from 'src/interfaces';
 import { subscriptionService } from '@services/subscription.service';
 import { getResponseError } from '@lib/utils';
 import { connect } from 'react-redux';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   ui: IUIConfig;
@@ -102,15 +103,17 @@ class SubscriberPage extends PureComponent<IProps, IStates> {
             backIcon={<ArrowLeftOutlined />}
             title="My Subscribers"
           />
-          <div className="table-responsive">
-            <TableListSubscription
-              dataSource={subscriptionList}
-              pagination={{ ...pagination, showSizeChanger: false }}
-              loading={loading}
-              onChange={this.handleTabChange.bind(this)}
-              rowKey="_id"
-            />
-          </div>
+          <ShadowBox>
+            <div className="table-responsive">
+              <TableListSubscription
+                dataSource={subscriptionList}
+                pagination={{ ...pagination, showSizeChanger: false }}
+                loading={loading}
+                onChange={this.handleTabChange.bind(this)}
+                rowKey="_id"
+              />
+            </div>
+          </ShadowBox>
         </div>
       </Layout>
     );

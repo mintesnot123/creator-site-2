@@ -6,7 +6,8 @@ import { FaComment, FaRegComment } from "react-icons/fa";
 import { RiShareForwardLine, RiShareForwardFill } from "react-icons/ri";
 import DropzoneComponent from '@components/common/DropzoneComponent.js';
 import AddPostComponent from "./AddPostComponent";
-
+import PostVideoUpload from '../my-video/post-video-upload';
+import AddGalleryCard from '@components/elements/add-gallery-card';
 import './add-post.less';
 const ProfileCard = () => {
     const { Meta } = Card;
@@ -85,6 +86,12 @@ const ProfileCard = () => {
                     </Row>
                 </div> */
                 < AddPostComponent />
+            }
+            {currentTab === 'clips' &&
+                <PostVideoUpload />
+            }
+            {currentTab === 'pic-set' &&
+                <AddGalleryCard />
             }
         </Card>
     );

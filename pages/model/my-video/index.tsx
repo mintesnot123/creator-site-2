@@ -11,6 +11,7 @@ import { TableListVideo } from '@components/video/table-list';
 import Link from 'next/link';
 import { connect } from 'react-redux';
 import { IUIConfig } from 'src/interfaces';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   ui: IUIConfig;
@@ -129,47 +130,51 @@ class ModelVideos extends PureComponent<IProps> {
             backIcon={<ArrowLeftOutlined />}
             title="My Videos"
           />
-          <Row>
-            <Col md={16} xs={24}>
-              <SearchFilter
-                searchWithKeyword
-                statuses={statuses}
-                onSubmit={this.handleFilter.bind(this)}
+          <ShadowBox>
+            <Row>
+              <Col md={16} xs={24}>
+                <SearchFilter
+                  searchWithKeyword
+                  statuses={statuses}
+                  onSubmit={this.handleFilter.bind(this)}
+                />
+              </Col>
+              <Col md={8} xs={24} style={{ display: 'flex', alignItems: 'center' }}>
+                <Button className="primary">
+                  <Link href="/model/my-video/upload">
+                    <a>
+                      {' '}
+                      <UploadOutlined />
+                      {' '}
+                      Upload new
+                    </a>
+                  </Link>
+                </Button>
+                &nbsp;
+                <Button className="secondary">
+                  <Link href="/model/my-video/bulk-upload">
+                    <a>
+                      <UploadOutlined />
+                      {' '}
+                      Bulk upload
+                    </a>
+                  </Link>
+                </Button>
+              </Col>
+            </Row>
+          </ShadowBox>
+          <ShadowBox>
+            <div className="table-responsive">
+              <TableListVideo
+                dataSource={list}
+                rowKey="_id"
+                loading={searching}
+                pagination={{ ...pagination, showSizeChanger: false }}
+                onChange={this.handleTableChange.bind(this)}
+                onDelete={this.deleteVideo.bind(this)}
               />
-            </Col>
-            <Col md={8} xs={24} style={{ display: 'flex', alignItems: 'center' }}>
-              <Button className="primary">
-                <Link href="/model/my-video/upload">
-                  <a>
-                    {' '}
-                    <UploadOutlined />
-                    {' '}
-                    Upload new
-                  </a>
-                </Link>
-              </Button>
-              &nbsp;
-              <Button className="secondary">
-                <Link href="/model/my-video/bulk-upload">
-                  <a>
-                    <UploadOutlined />
-                    {' '}
-                    Bulk upload
-                  </a>
-                </Link>
-              </Button>
-            </Col>
-          </Row>
-          <div className="table-responsive">
-            <TableListVideo
-              dataSource={list}
-              rowKey="_id"
-              loading={searching}
-              pagination={{ ...pagination, showSizeChanger: false }}
-              onChange={this.handleTableChange.bind(this)}
-              onDelete={this.deleteVideo.bind(this)}
-            />
-          </div>
+            </div>
+          </ShadowBox>
         </div>
       </Layout>
     );

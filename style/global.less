@@ -1,7 +1,8 @@
 @import './vars.less';
 
 .ant-layout {
-  background-color: @white;
+  //background-color: @white;
+  background-color: #f5f4fb;
 }
 
 .sub-background {
@@ -161,6 +162,7 @@
       font-weight: 500;
       font-size: 13px;
       border-radius: 5px;
+      //border-width: 2px;
     }
 
     textarea.ant-input {
@@ -286,7 +288,7 @@
 }
 
 .ant-upload-select.ant-upload-select-picture-card {
-  border-radius: 50%;
+  border-radius: 5%;
   border: 2px solid @light-color;
   background-image: url('/placeholder-image.jpg');
   background-repeat: no-repeat;
@@ -296,7 +298,7 @@
 
   img {
     margin-bottom: 10px;
-    border-radius: 50%;
+    border-radius: 5%;
     margin-bottom: 0;
     width: 100%;
     height: 100%;
@@ -338,7 +340,7 @@
 }
 
 .ant-btn.secondary {
-  background-color:  @secondary-color;
+  background-color: @secondary-color;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
   padding: 0.7em 2em;
   font-size: 0.9em;
@@ -408,6 +410,10 @@
   background-color: @table-bg;
   border-radius: 0.5em;
   overflow: hidden;
+}
+
+.ant-table {
+  background: white;
 }
 
 .filter-block {
@@ -626,11 +632,13 @@
     }
   }
 }
+
 .ant-popover {
   .ant-popover-inner-content {
     padding: 0;
   }
 }
+
 .ant-modal {
   .ant-modal-body {
     padding: 0 5px;

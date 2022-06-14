@@ -367,7 +367,8 @@ class VideoViewPage extends PureComponent<IProps> {
         }
       ]
     };
-
+console.log('teaserOptions 2', teaserOptions)
+console.log('videoJsOptions 2', videoJsOptions)
     return (
       <Layout>
         <Head>

@@ -1,5 +1,5 @@
 import { PureComponent } from "react";
-import { Layout, Tabs, Button, message, Modal, Tooltip, Result } from "antd";
+import { Layout, Tabs, Button, message, Modal, Tooltip, Result, Upload } from "antd";
 import { connect } from "react-redux";
 import {
   getVideos,
@@ -12,13 +12,16 @@ import {
   getGalleries,
   moreGalleries,
   resetGalleryState,
+  getPosts,
+  morePosts,
+  resetPostState
 } from "@redux/gallery/actions";
 import {
   listProducts,
   moreProduct,
   resetProductState,
 } from "@redux/product/actions";
-import { performerService, paymentService, utilsService } from "src/services";
+import { performerService, paymentService, utilsService, getGlobalConfig, authService } from "src/services";
 import Head from "next/head";
 import {
   LikeOutlined,
@@ -60,10 +63,18 @@ import { IoIosSend } from "react-icons/io";
 import { IoMaleFemale, IoLocationOutline } from "react-icons/io5";
 import { FaDollarSign } from "react-icons/fa";
 import FeedList from "./FeedList";
+import EditProfile from "@components/performer/editProfile";
+import { AvatarUpload } from '@components/user/avatar-upload-rect';
+import { CoverUpload } from '@components/user/cover-upload';
+
+import {
+  updateCurrentUserAvatar, updateCurrentUserCover
+} from 'src/redux/user/actions';
 
 import "@components/performer/performer.less";
 import "./profile.less";
 import "./profile.css";
+
 
 interface IProps {
   ui: IUIConfig;
@@ -84,13 +95,18 @@ interface IProps {
   productState: any;
   getGalleries: Function;
   moreGalleries: Function;
+  getPosts: Function;
+  morePosts: Function;
   galleryState: any;
+  postState: any;
   resetVideoState: Function;
   resetProductState: Function;
   resetGalleryState: Function;
+  resetPostState: Function;
+  phoneCodes: any;
+  languages: any;
+  bodyInfo: any;
 }
-const { TabPane } = Tabs;
-const { Meta } = Card;
 
 class PerformerProfile extends PureComponent<IProps> {
   static authenticate = true;
@@ -100,6 +116,7 @@ class PerformerProfile extends PureComponent<IProps> {
   subscriptionType = "monthly";
 
   state = {
+    offset: 0,
     currentTab: "feed",
     tab: "feed",
     itemPerPage: 24,
@@ -107,36 +124,39 @@ class PerformerProfile extends PureComponent<IProps> {
     vodPage: 0,
     productPage: 0,
     galleryPage: 0,
+    postPage: 0,
     showWelcomVideo: false,
     openSubscriptionModal: false,
     submiting: false,
   };
 
-  /* changeTab = (tab) => {
-    this.setState({ currentTab: tab });
-  } */
-
   static async getInitialProps({ ctx }) {
     try {
       const { query } = ctx;
-      const [performer, countries] = await Promise.all([
+      const [performer, countries, phoneCodes, languages, bodyInfo] = await Promise.all([
         performerService.findOne(query.username, {
           Authorization: ctx.token || "",
         }),
         utilsService.countriesList(),
+        utilsService.phoneCodesList(),
+        utilsService.languagesList(),
+        utilsService.bodyInfo()
       ]);
       return {
         performer: performer.data,
         countries: countries.data,
+        phoneCodes: phoneCodes?.data || [],
+        languages: languages?.data || [],
+        bodyInfo: bodyInfo?.data
       };
     } catch (e) {
       return { error: await e };
     }
   }
-
+  onScroll = () => this.setState({ offset: window.pageYOffset });
   async componentDidMount() {
     const { performer } = this.props;
-    console.log("performer", performer);
+
     if (performer) {
       const notShownWelcomeVideos = localStorage.getItem(
         "notShownWelcomeVideos"
@@ -148,17 +168,24 @@ class PerformerProfile extends PureComponent<IProps> {
       this.setState({ showWelcomVideo });
       this.loadItems();
     }
+    this.setState({ offset: window.pageYOffset });
+    //const onScroll = () => this.setState({ offset: window.pageYOffset });
+    window.removeEventListener('scroll', this.onScroll);
+    window.addEventListener("scroll", this.onScroll, { passive: true })
   }
 
   componentWillUnmount() {
     const {
       resetGalleryState: resetGal,
+      resetPostState: resetPost,
       resetProductState: resetProd,
       resetVideoState: resetVid,
     } = this.props;
     resetGal();
+    resetPost();
     resetProd();
     resetVid();
+    window.removeEventListener('scroll', this.onScroll);
   }
 
   loadMoreItem = async () => {
@@ -166,15 +193,17 @@ class PerformerProfile extends PureComponent<IProps> {
       moreVideo: moreVideoHandler,
       moreProduct: moreProductHandler,
       moreGalleries: moreGalleryHandler,
+      morePosts: morePostHandler,
       moreVod: moreVodHandler,
       videoState: videosVal,
       productState: productsVal,
       saleVideoState: saleVideosVal,
       galleryState: galleryVal,
+      postState: postVal,
       performer,
     } = this.props;
 
-    const { videoPage, itemPerPage, vodPage, productPage, galleryPage, tab } =
+    const { videoPage, itemPerPage, vodPage, productPage, galleryPage, postPage, tab } =
       this.state;
     const query = {
       limit: itemPerPage,
@@ -206,6 +235,14 @@ class PerformerProfile extends PureComponent<IProps> {
         offset: (galleryPage + 1) * itemPerPage,
       });
     }
+    if (tab === "feed") {
+      if (postVal.items.length >= postVal.total) return;
+      this.setState({ postPage: postPage + 1 });
+      morePostHandler({
+        ...query,
+        offset: (postPage + 1) * itemPerPage,
+      });
+    }
     if (tab === "store") {
       if (productsVal.items.length >= productsVal.total) return;
       this.setState({ productPage: productPage + 1 });
@@ -221,6 +258,7 @@ class PerformerProfile extends PureComponent<IProps> {
     const {
       performer,
       getGalleries: getGalleriesHandler,
+      getPosts: getPostsHandler,
       listProducts: listProductsHandler,
       getVideos: getVideosHandler,
       getVods: getVodsHandler,
@@ -248,6 +286,10 @@ class PerformerProfile extends PureComponent<IProps> {
       case "gallery":
         this.setState({ galleryPage: 0 });
         getGalleriesHandler(query);
+        break;
+      case "feed":
+        this.setState({ postPage: 0 });
+        getPostsHandler(query);
         break;
       case "store":
         this.setState({ productPage: 0 });
@@ -282,8 +324,7 @@ class PerformerProfile extends PureComponent<IProps> {
     }
     if (!performer.isSubscribed) {
       message.error(
-        `Please subscribe to ${
-          performer?.name || performer?.username || "the model"
+        `Please subscribe to ${performer?.name || performer?.username || "the model"
         } to start chatting`
       );
       return;
@@ -337,6 +378,17 @@ class PerformerProfile extends PureComponent<IProps> {
     this.setState({ tab }, () => this.loadItems());
   };
 
+  onAvatarUploaded = (data: any) => {
+    message.success('Changes saved.');
+    updateCurrentUserAvatar(data.response.data.url);
+  }
+
+  onCoverUploaded = (data: any) => {
+    message.success('Changes saved.');
+    updateCurrentUserCover(data.response.data.url);
+  }
+
+
   render() {
     const {
       error,
@@ -349,6 +401,10 @@ class PerformerProfile extends PureComponent<IProps> {
       productState: productProps,
       saleVideoState: saleVideoProps,
       galleryState: galleryProps,
+      postState: postProps,
+      phoneCodes,
+      languages,
+      bodyInfo
     } = this.props;
     if (error) {
       return (
@@ -402,11 +458,17 @@ class PerformerProfile extends PureComponent<IProps> {
       requesting: loadingGallery,
     } = galleryProps;
     const {
+      items: posts,
+      total: totalPosts,
+      requesting: loadingPost,
+    } = postProps;
+    const {
       showWelcomVideo,
       openSubscriptionModal,
       submiting,
       currentTab,
       tab,
+      offset,
     } = this.state;
     const country =
       countries.length &&
@@ -414,15 +476,17 @@ class PerformerProfile extends PureComponent<IProps> {
         (c) => c.name === performer?.country || c.code === performer?.country
       );
     const isCurrentUserProfile = user._id === performer._id;
-    console.log("user", user);
-    console.log("performer", performer);
+    const uploadHeaders = {
+      authorization: authService.getToken()
+    };
+    console.log('posts', posts)
+    console.log('performer', performer)
     return (
       <Layout>
         <Head>
           <title>
-            {`${ui?.siteName} | ${
-              performer?.name || performer?.username || ""
-            }`}
+            {`${ui?.siteName} | ${performer?.name || performer?.username || ""
+              }`}
           </title>
           <meta
             name="keywords"
@@ -432,9 +496,8 @@ class PerformerProfile extends PureComponent<IProps> {
           {/* OG tags */}
           <meta
             property="og:title"
-            content={`${ui?.siteName} | ${
-              performer?.name || performer?.username || ""
-            }`}
+            content={`${ui?.siteName} | ${performer?.name || performer?.username || ""
+              }`}
             key="title"
           />
           <meta
@@ -449,9 +512,8 @@ class PerformerProfile extends PureComponent<IProps> {
           {/* Twitter tags */}
           <meta
             name="twitter:title"
-            content={`${ui?.siteName} | ${
-              performer?.name || performer?.username || ""
-            }`}
+            content={`${ui?.siteName} | ${performer?.name || performer?.username || ""
+              }`}
           />
           <meta
             name="twitter:image"
@@ -464,11 +526,23 @@ class PerformerProfile extends PureComponent<IProps> {
             <div
               className="top-profile-new"
               style={{
+                position: "relative",
                 backgroundImage: performer?.cover
                   ? `url('${performer?.cover}')`
                   : "url('/banner-image.jpg')",
               }}
             >
+              {isCurrentUserProfile &&
+                <div className="cover-upload">
+                  <CoverUpload
+                    headers={uploadHeaders}
+                    uploadUrl={performerService.getCoverUploadUrl()}
+                    onUploaded={this.onCoverUploaded.bind(this)}
+                    image={performer?.cover || "/banner-image.jpg"}
+                    options={{ fieldName: 'cover' }}
+                  />
+                </div>
+              }
               <div className="bg-2nd">
                 <div className="top-banner">
                   <a
@@ -546,7 +620,7 @@ class PerformerProfile extends PureComponent<IProps> {
                   onClick={() => this.changeTab("video")}
                 >
                   <h5 className="font-bold mb-0 block">
-                    {shortenLargeNumber(performer?.stats?.totalGalleries || 0)}
+                    {shortenLargeNumber(/* performer?.stats?.totalGalleries */totalVideos || 0)}
                   </h5>
                   <small className="text-muted profile-list-btn">video</small>
                 </li>
@@ -555,7 +629,7 @@ class PerformerProfile extends PureComponent<IProps> {
                   onClick={() => this.changeTab("saleVideo")}
                 >
                   <h5 className="font-bold mb-0 block">
-                    {shortenLargeNumber(performer?.stats?.totalVideos || 0)}{" "}
+                    {shortenLargeNumber(/* performer?.stats?.totalVideos */totalVods || 0)}{" "}
                   </h5>
                   <small className="text-muted">saleVideo</small>
                 </li>
@@ -564,23 +638,22 @@ class PerformerProfile extends PureComponent<IProps> {
                   onClick={() => this.changeTab("gallery")}
                 >
                   <h5 className="font-bold mb-0 block">
-                    {shortenLargeNumber(performer?.stats?.totalPhotos || 0)}
+                    {shortenLargeNumber(/* performer?.stats?.totalPhotos */totalGalleries || 0)}
                   </h5>
                   <small className="text-muted">gallery</small>
                 </li>
-                <li
+                {/* <li
                   className={`inline-block ${tab === "store" && "active"}`}
                   onClick={() => this.changeTab("store")}
                 >
                   <h5 className="font-bold mb-0 block">My</h5>
                   <small className="text-muted">About</small>
-                </li>
+                </li> */}
                 {isCurrentUserProfile && (
                   <li
-                    className={`inline-block ${
-                      tab === "edit-profile" && "active"
-                    }`}
-                    onClick={() => this.changeTab("dit-profile")}
+                    className={`inline-block ${tab === "edit-profile" && "active"
+                      }`}
+                    onClick={() => this.changeTab("edit-profile")}
                   >
                     <h5 className="font-bold mb-0 block">Edit</h5>
                     <small className="text-muted">Profile</small>
@@ -590,8 +663,9 @@ class PerformerProfile extends PureComponent<IProps> {
             </div>
           </div>
           <div className="model-content-wrapper-new">
-            <Row justify="center" gutter={{ xxl: 32, xl: 32, lg: 16, md: 12 }}>
+            <Row justify="center">
               <Col
+                xs={{ span: 23 }}
                 sm={{ span: 22 }}
                 md={{ span: 7 }}
                 lg={{ span: 6 }}
@@ -600,10 +674,20 @@ class PerformerProfile extends PureComponent<IProps> {
               >
                 <div className="main-profile-new">
                   <div className="fl-col-new">
-                    <img
-                      alt="Avatar"
-                      src={performer?.avatar || "/no-avatar.png"}
-                    />
+                    {isCurrentUserProfile ?
+                      <AvatarUpload
+                        headers={uploadHeaders}
+                        uploadUrl={performerService.getAvatarUploadUrl()}
+                        onUploaded={this.onAvatarUploaded.bind(this)}
+                        image={performer?.avatar || "/no-avatar.png"}
+                      /> :
+                      <div style={{ position: "relative" }} className="avatar-wrapper">
+                        <img
+                          alt="Avatar"
+                          src={performer?.avatar || "/no-avatar.png"}
+                        />
+                      </div>
+                    }
                     <div className="user-profile-detail-sm-wrapper m-user-name-sm">
                       <Tooltip title={performer?.name}>
                         <h4>
@@ -623,17 +707,27 @@ class PerformerProfile extends PureComponent<IProps> {
                         >
                           Create campaign
                         </Button>
-                      ) : (
+                      ) : (!performer?.isSubscribed ?
+                        <Button
+                          className="primary btn-follow"
+                          disabled={(submiting && this.subscriptionType === 'monthly') || user?.isPerformer}
+                          onClick={() => {
+                            this.subscriptionType = 'monthly';
+                            this.handleClickSubscribe();
+                          }}
+                        >
+                          ${performer.monthlyPrice.toFixed(2)}/mo Subscribe
+                        </Button> :
                         <Button
                           className="primary btn-follow"
                           onClick={() => this.handleClickMessage()}
                         >
-                          Followed
+                          Chat
                         </Button>
                       )}
                     </div>
                     <div className="user-profile-detail-md-wrapper">
-                      <p>last seen 20 minutes ago</p>
+                      <p style={{ textAlign: "center" }}>last seen 20 minutes ago</p>
                       {isCurrentUserProfile ? (
                         <Button
                           className="primary btn-follow"
@@ -641,25 +735,42 @@ class PerformerProfile extends PureComponent<IProps> {
                         >
                           Create campaign
                         </Button>
-                      ) : (
+                      ) : (!performer?.isSubscribed ?
+                        <Button
+                          className="primary btn-follow"
+                          disabled={(submiting && this.subscriptionType === 'monthly') || user?.isPerformer}
+                          onClick={() => {
+                            this.subscriptionType = 'monthly';
+                            this.handleClickSubscribe();
+                          }}
+                        >
+                          ${performer.monthlyPrice.toFixed(2)}/mo Subscribe
+                        </Button> :
                         <Button
                           className="primary btn-follow"
                           onClick={() => this.handleClickMessage()}
                         >
-                          Followed
+                          Chat
                         </Button>
                       )}
                       {!isCurrentUserProfile && (
                         <ul className="social-icon-wrapper">
                           {performer.isSubscribed ? (
-                            <li className="inline-block">
+                            <li className="inline-block" onClick={() => this.handleClickMessage()}>
                               <IoIosSend className="social-icon-small" />
                               <small className="text-muted">Chat</small>
                             </li>
                           ) : (
-                            <li className="inline-block">
-                              <FaDollarSign className="social-icon-small" />{" "}
-                              {`${performer.monthlyPrice}/mo`}
+                            <li className="inline-block"
+                              onClick={() => {
+                                this.subscriptionType = 'yearly';
+                                this.handleClickSubscribe();
+                              }}
+                            >
+                              <div style={{ display: "flex" }}>
+                                <FaDollarSign className="social-icon-small" />{" "}
+                                <span className="social-icon-small"><strong>{performer?.yearlyPrice.toFixed(2)}</strong>{`/yr`}</span>
+                              </div>
                               <small className="text-muted">Subscribe</small>
                             </li>
                           )}
@@ -691,7 +802,6 @@ class PerformerProfile extends PureComponent<IProps> {
                         </div>
                         <div className="social-icon-wrapper">
                           <RiSnapchatLine className="social-icon" />
-                          {/* <WhatsAppOutlined className="social-icon" /> */}
                           <RiTwitterLine className="social-icon" />
                           <InstagramOutlined className="social-icon" />
                         </div>
@@ -743,30 +853,116 @@ class PerformerProfile extends PureComponent<IProps> {
                       </div>
                     </div>
                   </div>
+                  <div className="user-bio-sm">
+                    <p>{"If you want specific control over the positioning and placement of the Icon, then that should be done by placing the Icon component within the"/* {performer?.bio || "n/a"} */}</p>
+                  </div>
+                  {!isCurrentUserProfile && (
+                    <ul className={`social-icon-wrapper-sm ${offset > 300 && "social-icon-wrapper-sm-fixed"}`}>
+                      {performer.isSubscribed ? (
+                        <li className="inline-block" onClick={() => this.handleClickMessage()}>
+                          <IoIosSend className="social-icon-small" />
+                          <small className="text-muted">Chat</small>
+                        </li>
+                      ) : (
+                        <li className="inline-block"
+                          onClick={() => {
+                            this.subscriptionType = 'monthly';
+                            this.handleClickSubscribe();
+                          }}
+                        >
+                          <div style={{ display: "flex" }}>
+                            <FaDollarSign className="social-icon-small" />
+                            <span className="social-icon-small"><strong>{performer.monthlyPrice.toFixed(2)}</strong>{`/mo`}</span>
+                          </div>{" "}
+
+                          <small className="text-muted">Subscribe</small>
+                        </li>
+                      )}
+                      <li className="inline-block">
+                        <BsCameraVideoFill className="social-icon-small" />
+                        <small className="text-muted">Video Call</small>
+                      </li>
+                      <li className="inline-block">
+                        <WhatsAppOutlined className="social-icon-small" />
+                        <small className="text-muted">Custom</small>
+                      </li>
+                      <li className="inline-block">
+                        <FaDollarSign className="social-icon-small" />
+                        <small className="text-muted">Tip</small>
+                      </li>
+                    </ul>
+                  )}
+                  <div className="divider-line-sm"></div>
+                  <div className="profile-list-sm">
+                    <ul className="mb-0">
+                      <li
+                        className={`inline-block ${tab === "feed" && "active"}`}
+                        onClick={() => this.changeTab("feed")}
+                      >
+                        <h5 className="font-bold mb-0 block">
+                          {shortenLargeNumber(performer?.stats?.totalGalleries || 0)}
+                        </h5>
+                        <small className="text-muted profile-list-btn">feed</small>
+                      </li>
+                      <li
+                        className={`inline-block ${tab === "video" && "active"}`}
+                        onClick={() => this.changeTab("video")}
+                      >
+                        <h5 className="font-bold mb-0 block">
+                          {shortenLargeNumber(performer?.stats?.totalGalleries || 0)}
+                        </h5>
+                        <small className="text-muted profile-list-btn">video</small>
+                      </li>
+                      <li
+                        className={`inline-block ${tab === "saleVideo" && "active"}`}
+                        onClick={() => this.changeTab("saleVideo")}
+                      >
+                        <h5 className="font-bold mb-0 block">
+                          {shortenLargeNumber(performer?.stats?.totalVideos || 0)}{" "}
+                        </h5>
+                        <small className="text-muted">saleVideo</small>
+                      </li>
+                      <li
+                        className={`inline-block ${tab === "gallery" && "active"}`}
+                        onClick={() => this.changeTab("gallery")}
+                      >
+                        <h5 className="font-bold mb-0 block">
+                          {shortenLargeNumber(performer?.stats?.totalPhotos || 0)}
+                        </h5>
+                        <small className="text-muted">gallery</small>
+                      </li>
+                      <li
+                        className={`inline-block ${tab === "store" && "active"}`}
+                        onClick={() => this.changeTab("store")}
+                      >
+                        <h5 className="font-bold mb-0 block">My</h5>
+                        <small className="text-muted">About</small>
+                      </li>
+                      {isCurrentUserProfile && (
+                        <li
+                          className={`inline-block ${tab === "edit-profile" && "active"
+                            }`}
+                          onClick={() => this.changeTab("dit-profile")}
+                        >
+                          <h5 className="font-bold mb-0 block">Edit</h5>
+                          <small className="text-muted">Profile</small>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
                 </div>
               </Col>
               <Col
+                xs={{ span: 24 }}
                 sm={{ span: 22 }}
                 md={{ span: 16 }}
                 lg={{ span: 16 }}
                 xl={{ span: 13 }}
                 xxl={{ span: 12 }}
               >
-                {/* <Row gutter={16}>
-                  {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(value => {
-                    return <Col span={12}>
-                      <ProfileCard />
-                    </Col>
-                  })}
-                </Row> */}
                 <div className="inner-content-wrapper-new">
                   {tab === "video" ? (
                     <>
-                      {/* <div className="heading-tab">
-                      <h4>
-                        {totalVideos > 1 ? `${totalVideos} VIDEOS` : 'VIDEO'}
-                      </h4>
-                    </div> */}
                       <ScrollListVideo
                         items={videos}
                         loading={loadingVid}
@@ -776,13 +972,6 @@ class PerformerProfile extends PureComponent<IProps> {
                     </>
                   ) : tab === "saleVideo" ? (
                     <>
-                      <div className="heading-tab">
-                        <h4>
-                          {totalVods > 1
-                            ? `${totalVods} SALE VIDEOS`
-                            : "SALE VIDEO"}
-                        </h4>
-                      </div>
                       <ScrollListVideo
                         items={saleVideos}
                         loading={loadingVod}
@@ -794,11 +983,6 @@ class PerformerProfile extends PureComponent<IProps> {
                     </>
                   ) : tab === "gallery" ? (
                     <>
-                      {/* <div className="heading-tab">
-                        <h4>
-                          {totalGalleries > 1 ? `${totalGalleries} GALLERIES` : 'GALLERY'}
-                        </h4>
-                      </div> */}
                       <ScrollListGallery
                         items={galleries}
                         loading={loadingGallery}
@@ -810,13 +994,6 @@ class PerformerProfile extends PureComponent<IProps> {
                     </>
                   ) : tab === "store" ? (
                     <>
-                      <div className="heading-tab">
-                        <h4>
-                          {totalProducts > 1
-                            ? `${totalProducts} PRODUCTS`
-                            : "PRODUCT"}
-                        </h4>
-                      </div>
                       <ScrollListProduct
                         items={products}
                         loading={loadingProduct}
@@ -826,13 +1003,26 @@ class PerformerProfile extends PureComponent<IProps> {
                         loadMore={this.loadMoreItem.bind(this)}
                       />
                     </>
+                  ) : tab === "edit-profile" ? (
+                    <>
+                      <div style={{ backgroundColor: "white", padding: "20px" }}>
+                        <EditProfile
+                          phoneCodes={phoneCodes}
+                          languages={languages}
+                          bodyInfo={bodyInfo}
+                          countries={countries}
+                        />
+                      </div>
+                    </>
                   ) : (
                     <>
                       <FeedList
                         isCurrentUserProfile={isCurrentUserProfile}
-                        items={/* videos */ [0, 1, 2, 3, 4, 5, 6]}
-                        loading={loadingVid}
-                        canLoadmore={videos && videos.length < totalVideos}
+                        items={posts}
+                        loading={loadingPost}
+                        canLoadmore={
+                          posts && posts.length < totalPosts
+                        }
                         loadMore={this.loadMoreItem.bind(this)}
                       />
                     </>
@@ -841,100 +1031,6 @@ class PerformerProfile extends PureComponent<IProps> {
               </Col>
             </Row>
           </div>
-          {/* <div className="model-content">
-            <Tabs
-              defaultActiveKey="Video"
-              className="model-tabs"
-              size="large"
-              onTabClick={(tab) =>
-                this.setState({ tab }, () => this.loadItems())
-              }
-            >
-              <TabPane
-                tab={
-                  <Tooltip placement="top" title="Videos">
-                    <VideoCameraOutlined />
-                  </Tooltip>
-                }
-                key="video"
-              >
-                <div className="heading-tab">
-                  <h4>
-                    {totalVideos > 1 ? `${totalVideos} VIDEOS` : 'VIDEO'}
-                  </h4>
-                </div>
-                <ScrollListVideo
-                  items={videos}
-                  loading={loadingVid}
-                  canLoadmore={videos && videos.length < totalVideos}
-                  loadMore={this.loadMoreItem.bind(this)}
-                />
-              </TabPane>
-              <TabPane
-                tab={
-                  <Tooltip placement="top" title="Premium content">
-                    <span>
-                      <SaleVidIcon />
-                    </span>
-                  </Tooltip>
-                }
-                key="saleVideo"
-              >
-                <div className="heading-tab">
-                  <h4>
-                    {totalVods > 1 ? `${totalVods} SALE VIDEOS` : 'SALE VIDEO'}
-                  </h4>
-                </div>
-                <ScrollListVideo
-                  items={saleVideos}
-                  loading={loadingVod}
-                  canLoadmore={saleVideos && saleVideos.length < totalVods}
-                  loadMore={this.loadMoreItem.bind(this)}
-                />
-              </TabPane>
-              <TabPane
-                tab={
-                  <Tooltip placement="top" title="Galleries">
-                    <PictureOutlined />
-                  </Tooltip>
-                }
-                key="gallery"
-              >
-                <div className="heading-tab">
-                  <h4>
-                    {totalGalleries > 1 ? `${totalGalleries} GALLERIES` : 'GALLERY'}
-                  </h4>
-                </div>
-                <ScrollListGallery
-                  items={galleries}
-                  loading={loadingGallery}
-                  canLoadmore={galleries && galleries.length < totalGalleries}
-                  loadMore={this.loadMoreItem.bind(this)}
-                />
-              </TabPane>
-
-              <TabPane
-                tab={
-                  <Tooltip placement="top" title="Merchandise">
-                    <ShoppingOutlined />
-                  </Tooltip>
-                }
-                key="store"
-              >
-                <div className="heading-tab">
-                  <h4>
-                    {totalProducts > 1 ? `${totalProducts} PRODUCTS` : 'PRODUCT'}
-                  </h4>
-                </div>
-                <ScrollListProduct
-                  items={products}
-                  loading={loadingProduct}
-                  canLoadmore={products && products.length < totalProducts}
-                  loadMore={this.loadMoreItem.bind(this)}
-                />
-              </TabPane>
-            </Tabs>
-          </div> */}
         </div>
         {performer &&
           performer?.welcomeVideoPath &&
@@ -1011,6 +1107,7 @@ const mapStates = (state: any) => ({
   saleVideoState: { ...state.video.saleVideos },
   productState: { ...state.product.products },
   galleryState: { ...state.gallery.galleries },
+  postState: { ...state.gallery.posts },
   user: { ...state.user.current },
 });
 
@@ -1022,9 +1119,12 @@ const mapDispatch = {
   moreProduct,
   getGalleries,
   moreGalleries,
+  getPosts,
+  morePosts,
   moreVod,
   resetProductState,
   resetVideoState,
   resetGalleryState,
+  resetPostState,
 };
 export default connect(mapStates, mapDispatch)(PerformerProfile);
