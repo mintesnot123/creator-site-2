@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { galleryService } from '@services/gallery.service';
 import { connect } from 'react-redux';
 import { IUIConfig } from 'src/interfaces';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   ui: IUIConfig;
@@ -148,7 +149,7 @@ class GalleryListingPage extends PureComponent<IProps, IStates> {
             backIcon={<ArrowLeftOutlined />}
             title="My Galleries"
           />
-          <div>
+          <ShadowBox>
             <Row>
               <Col xl={21} md={14} xs={24}>
                 <SearchFilter statuses={statuses} onSubmit={this.handleFilter.bind(this)} />
@@ -165,17 +166,19 @@ class GalleryListingPage extends PureComponent<IProps, IStates> {
                 </Button>
               </Col>
             </Row>
-          </div>
-          <div className="table-responsive">
-            <TableListGallery
-              dataSource={galleries}
-              rowKey="_id"
-              loading={loading || submiting}
-              pagination={{ ...pagination, showSizeChanger: false }}
-              onChange={this.handleSorterChange.bind(this)}
-              deleteGallery={this.handleDeleteGallery.bind(this)}
-            />
-          </div>
+          </ShadowBox>
+          <ShadowBox>
+            <div className="table-responsive">
+              <TableListGallery
+                dataSource={galleries}
+                rowKey="_id"
+                loading={loading || submiting}
+                pagination={{ ...pagination, showSizeChanger: false }}
+                onChange={this.handleSorterChange.bind(this)}
+                deleteGallery={this.handleDeleteGallery.bind(this)}
+              />
+            </div>
+          </ShadowBox>
         </div>
       </Layout>
     );

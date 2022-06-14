@@ -8,6 +8,7 @@ import { OrderSearchFilter } from '@components/order';
 import OrderTableList from '@components/order/table-list';
 import { connect } from 'react-redux';
 import { IUIConfig, IUser } from 'src/interfaces';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   user: IUser;
@@ -106,18 +107,22 @@ class ModelOrderPage extends PureComponent<IProps> {
             backIcon={<ArrowLeftOutlined />}
             title="Order History"
           />
-          <OrderSearchFilter
-            onSubmit={this.handleFilter.bind(this)}
-          />
+          <ShadowBox>
+            <OrderSearchFilter
+              onSubmit={this.handleFilter.bind(this)}
+            />
+          </ShadowBox>
           <div style={{ marginBottom: '20px' }} />
-          <OrderTableList
-            user={user}
-            dataSource={list}
-            rowKey="_id"
-            loading={searching}
-            pagination={{ ...pagination, showSizeChanger: false }}
-            onChange={this.handleTableChange.bind(this)}
-          />
+          <ShadowBox>
+            <OrderTableList
+              user={user}
+              dataSource={list}
+              rowKey="_id"
+              loading={searching}
+              pagination={{ ...pagination, showSizeChanger: false }}
+              onChange={this.handleTableChange.bind(this)}
+            />
+          </ShadowBox>
         </div>
       </Layout>
     );

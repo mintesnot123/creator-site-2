@@ -3,11 +3,20 @@ import { merge } from 'lodash';
 import {
   getGalleries, getGalleriesSuccess, getGalleriesFail, resetGalleryState,
   moreGalleries, moreGalleriesFail, moreGalleriesSuccess,
-  getRelatedGalleries, getRelatedGalleriesFail, getRelatedGalleriesSuccess
+  getRelatedGalleries, getRelatedGalleriesFail, getRelatedGalleriesSuccess,
+  getPosts,getPostsFail,getPostsSuccess,
+  morePosts,morePostsFail,morePostsSuccess,  
 } from './actions';
 
 const initialState = {
   galleries: {
+    requesting: false,
+    items: [],
+    total: 0,
+    error: null,
+    success: false
+  },
+  posts: {
     requesting: false,
     items: [],
     total: 0,
@@ -105,6 +114,89 @@ const galleryReducer = [
       };
     }
   },
+
+  {
+    on: getPosts,
+    reducer(state: any) {
+      return {
+        ...state,
+        posts: {
+          ...state.posts,
+          requesting: true
+        }
+      };
+    }
+  },
+  {
+    on: getPostsSuccess,
+    reducer(state: any, data: any) {
+      return {
+        ...state,
+        posts: {
+          requesting: false,
+          items: data.payload.data,
+          total: data.payload.total,
+          success: true
+        }
+      };
+    }
+  },
+  {
+    on: getPostsFail,
+    reducer(state: any, data: any) {
+      return {
+        ...state,
+        posts: {
+          ...state.posts,
+          requesting: false,
+          error: data.payload
+        }
+      };
+    }
+  },
+  {
+    on: morePosts,
+    reducer(state: any) {
+      return {
+        ...state,
+        posts: {
+          ...state.posts,
+          requesting: true,
+          error: null,
+          success: false
+        }
+      };
+    }
+  },
+  {
+    on: morePostsSuccess,
+    reducer(state: any, data: any) {
+      return {
+        ...state,
+        posts: {
+          requesting: false,
+          total: data.payload.total,
+          items: [...state.posts.items, ...data.payload.data],
+          success: true
+        }
+      };
+    }
+  },
+  {
+    on: morePostsFail,
+    reducer(state: any, data: any) {
+      return {
+        ...state,
+        posts: {
+          ...state.posts,
+          requesting: false,
+          error: data.payload,
+          success: false
+        }
+      };
+    }
+  },
+
   {
     on: getRelatedGalleries,
     reducer(state: any) {

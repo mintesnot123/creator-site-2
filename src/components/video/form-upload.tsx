@@ -142,7 +142,8 @@ export class FormUploadVideo extends PureComponent<IProps> {
           if (isSchedule) {
             data.scheduledAt = scheduledAt;
           }
-          submit(data);
+          console.log('data 2', data)
+          /* submit(data); */
         }}
         onFinishFailed={() => message.error('Please complete the required fields')}
         name="form-upload"

@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { IUIConfig } from 'src/interfaces';
 import { reportService } from 'src/services';
 import ReportTableList from '@components/report/report-table-list';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   ui: IUIConfig;
@@ -71,13 +72,15 @@ class PerformerReportList extends PureComponent<IProps> {
             backIcon={<ArrowLeftOutlined />}
             title="Violations Reported"
           />
-          <ReportTableList
-            items={items}
-            searching={loading}
-            total={total}
-            onChange={this.handleTabChange.bind(this)}
-            pageSize={limit}
-          />
+          <ShadowBox>
+            <ReportTableList
+              items={items}
+              searching={loading}
+              total={total}
+              onChange={this.handleTabChange.bind(this)}
+              pageSize={limit}
+            />
+          </ShadowBox>
         </div>
       </Layout>
     );

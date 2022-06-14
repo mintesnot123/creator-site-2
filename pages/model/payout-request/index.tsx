@@ -10,6 +10,7 @@ import PayoutRequestList from 'src/components/payout-request/table';
 import { getResponseError } from '@lib/utils';
 import { payoutRequestService } from '@services/index';
 import { IUIConfig } from '@interfaces/ui-config';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   ui: IUIConfig
@@ -88,23 +89,27 @@ class PerformerPayoutRequestPage extends PureComponent<IProps> {
             backIcon={<ArrowLeftOutlined />}
             title="Payout Requested"
           />
-          <div style={{ margin: '10px 0' }}>
-            <Button
-              type="primary"
-              onClick={() => Router.push('/model/payout-request/create')}
-            >
-              Request a Payout
-            </Button>
-          </div>
-          <div className="table-responsive">
-            <PayoutRequestList
-              payouts={items}
-              searching={loading}
-              total={pagination.total}
-              onChange={this.handleTabChange.bind(this)}
-              pageSize={pagination.pageSize}
-            />
-          </div>
+          <ShadowBox>
+            <div style={{ margin: '10px 0' }}>
+              <Button
+                type="primary"
+                onClick={() => Router.push('/model/payout-request/create')}
+              >
+                Request a Payout
+              </Button>
+            </div>
+          </ShadowBox>
+          <ShadowBox>
+            <div className="table-responsive">
+              <PayoutRequestList
+                payouts={items}
+                searching={loading}
+                total={pagination.total}
+                onChange={this.handleTabChange.bind(this)}
+                pageSize={pagination.pageSize}
+              />
+            </div>
+          </ShadowBox>
         </div>
       </Layout>
     );

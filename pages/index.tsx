@@ -18,6 +18,8 @@ import {
 import {
   IUser, IVideo, IProduct, IUIConfig, ISettings, IBanner, IPerformer
 } from 'src/interfaces';
+import LoaderList from '@components/elements/LoaderList'
+
 
 interface IProps {
   settings: ISettings;
@@ -121,11 +123,6 @@ class HomePage extends PureComponent<IProps, IStates> {
           />
         </Head>
         <div className="home-page">
-          {topBanners?.length > 0 && (
-            <div className="banner">
-              <Banner banners={topBanners} />
-            </div>
-          )}
           <div style={{ position: 'relative' }}>
             {/* <div className="banner-left">
                   {leftBanners && leftBanners.length > 0 && <Banner banners={leftBanners} />}
@@ -134,18 +131,19 @@ class HomePage extends PureComponent<IProps, IStates> {
                   {rightBanners && rightBanners.length > 0 && <Banner banners={rightBanners} />}
                 </div> */}
             <div className="main-container">
+              {topBanners?.length > 0 && (
+                <div className="banner">
+                  <Banner banners={topBanners} />
+                </div>
+              )}
               <h3 className="page-heading">
                 <StarOutlined />
                 {' '}
                 Hot Models
               </h3>
-              {performers?.length > 0 ? (
-                <HomePerformers performers={performers} fetching={fetching} />
-              ) : (
-                <p className="text-center">No profile was found.</p>
-              )}
+              <HomePerformers performers={performers} fetching={fetching} />
               {middleBanners?.length > 0 && (
-              <Banner effect="fade" arrows={false} dots banners={middleBanners} />
+                <Banner effect="fade" arrows={false} dots banners={middleBanners} />
               )}
               <h3 className="page-heading">
                 <VideoCameraOutlined />
@@ -153,15 +151,15 @@ class HomePage extends PureComponent<IProps, IStates> {
                 Hot Videos
               </h3>
               <Row>
-                {videos?.length > 0 && videos.map((v) => (
+                {videos?.length > 0 ? videos.map((v) => (
                   <Col xs={12} sm={12} md={6} lg={6} key={v?._id}>
                     <VideoCard video={v} />
                   </Col>
-                ))}
-                {!videos?.length && <p>No video was found</p>}
+                )) : <LoaderList row={2} column={4} />
+                }
               </Row>
               {bottomBanners?.length > 0 && (
-              <Banner effect="fade" arrows={false} dots banners={bottomBanners} />
+                <Banner effect="fade" arrows={false} dots banners={bottomBanners} />
               )}
               <h3 className="page-heading">
                 <ShoppingCartOutlined />
@@ -169,22 +167,22 @@ class HomePage extends PureComponent<IProps, IStates> {
                 Hot Products
               </h3>
               <Row>
-                {products?.length > 0 && products.map((p) => (
+                {products?.length > 0 ? products.map((p) => (
                   <Col xs={12} sm={12} md={6} lg={6} key={p?._id}>
                     <ProductCard product={p} />
                   </Col>
-                ))}
-                {!products?.length && <p>No product was found</p>}
+                )) : <LoaderList row={2} column={4} />
+                }
               </Row>
               <div className="signup-grp-btns">
                 {!user?._id && (
-                <Link href="/auth/model-register">
-                  <Button className="primary">
-                    <RocketOutlined />
-                    {' '}
-                    BECOME A MODEL
-                  </Button>
-                </Link>
+                  <Link href="/auth/model-register">
+                    <Button className="primary">
+                      <RocketOutlined />
+                      {' '}
+                      BECOME A MODEL
+                    </Button>
+                  </Link>
                 )}
                 <Link href="/model">
                   <Button className="secondary">
@@ -208,5 +206,5 @@ const mapStates = (state: any) => ({
   settings: state.settings
 });
 
-const mapDispatch = { };
+const mapDispatch = {};
 export default connect(mapStates, mapDispatch)(HomePage);

@@ -1,5 +1,5 @@
 import { PureComponent } from 'react';
-import { Layout, message, PageHeader } from 'antd';
+import { Layout, message, PageHeader, Row, Col } from 'antd';
 import {
   ArrowLeftOutlined
 } from '@ant-design/icons';
@@ -10,6 +10,7 @@ import { galleryService } from 'src/services';
 import { getResponseError } from '@lib/utils';
 import Router from 'next/router';
 import { connect } from 'react-redux';
+import ShadowBox from '@components/elements/ShadowBox';
 
 interface IProps {
   ui: IUIConfig;
@@ -56,10 +57,16 @@ class GalleryCreatePage extends PureComponent<IProps, IStates> {
             backIcon={<ArrowLeftOutlined />}
             title="New Gallery"
           />
-          <FormGallery
-            submiting={submiting}
-            onFinish={this.onFinish.bind(this)}
-          />
+          <Row>
+            <Col xs={24} sm={24} md={18} lg={12}>
+              <ShadowBox>
+                <FormGallery
+                  submiting={submiting}
+                  onFinish={this.onFinish.bind(this)}
+                />
+              </ShadowBox>
+            </Col>
+          </Row>
         </div>
       </Layout>
     );

@@ -7,9 +7,12 @@ import { updateUIValue, loadUIValue } from 'src/redux/ui/actions';
 import { IUIConfig } from 'src/interfaces/ui-config';
 import './primary-layout.less';
 
-const Header = dynamic(() => import('@components/common/layout/header'));
+/* const Header = dynamic(() => import('@components/common/layout/header'));
 const Footer = dynamic(() => import('@components/common/layout/footer'));
-const Loader = dynamic(() => import('@components/common/base/loader'));
+const Loader = dynamic(() => import('@components/common/base/loader')); */
+import Header from '@components/common/layout/header';
+import Footer from '@components/common/layout/footer';
+import Loader from '@components/common/base/loader';
 
 interface DefaultProps extends IUIConfig {
   children: any;

@@ -17,6 +17,8 @@ import { updateSettings } from '@redux/settings/actions';
 import { Socket } from 'src/socket';
 import Head from 'next/head';
 import '../style/index.less';
+import '../style/global.css'
+//import 'bootstrap/dist/css/bootstrap.css';
 
 declare global {
   interface Window {
